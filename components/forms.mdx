@@ -647,3 +647,257 @@ navigate(`/personalizar/${modelo}`, {
 <Warning>
 **State Persistence**: Location state is lost on page refresh. Consider using localStorage or sessionStorage for persistence.
 </Warning>
+
+## ConfirmDialog Component
+
+Modal dialog component for user confirmation prompts with customizable actions.
+
+**Location:** `src/components/ConfirmDialog.jsx`
+
+### Props
+
+<ParamField path="isOpen" type="boolean" required>
+  Controls dialog visibility
+</ParamField>
+
+<ParamField path="title" type="string" required>
+  Dialog title text
+</ParamField>
+
+<ParamField path="message" type="string" required>
+  Dialog message/description text
+</ParamField>
+
+<ParamField path="confirmText" type="string" required>
+  Text for confirm button
+</ParamField>
+
+<ParamField path="cancelText" type="string" required>
+  Text for cancel button
+</ParamField>
+
+<ParamField path="onConfirm" type="() => void" required>
+  Callback when confirm button is clicked
+</ParamField>
+
+<ParamField path="onCancel" type="() => void" required>
+  Callback when cancel button is clicked
+</ParamField>
+
+<ParamField path="type" type="string" default="confirm">
+  Dialog type: 'confirm', 'success', or 'error' (currently unused in styling)
+</ParamField>
+
+### Implementation
+
+```jsx ConfirmDialog.jsx
+import React from "react";
+
+export default function ConfirmDialog({
+  isOpen,
+  title,
+  message,
+  confirmText,
+  cancelText,
+  onConfirm,
+  onCancel,
+  type = "confirm",
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
+        <p className="text-gray-600 mb-8 text-lg leading-relaxed">{message}</p>
+        
+        <div className="flex gap-4">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition"
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-6 py-3 rounded-lg bg-purple-700 text-white font-semibold hover:bg-purple-800 transition"
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Usage Example
+
+Used in AgregarLogo component for cancel and save confirmations:
+
+```jsx
+import ConfirmDialog from './ConfirmDialog';
+
+function AgregarLogo() {
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+  return (
+    <>
+      <ConfirmDialog
+        isOpen={showCancelDialog}
+        title="¿Estás seguro?"
+        message="Se perderán todos los cambios no guardados."
+        confirmText="Sí, cancelar"
+        cancelText="No, continuar editando"
+        onConfirm={handleCancelConfirm}
+        onCancel={() => setShowCancelDialog(false)}
+      />
+      
+      <ConfirmDialog
+        isOpen={showSaveDialog}
+        title="Guardar cambios"
+        message="¿Deseas guardar los cambios realizados?"
+        confirmText="Guardar"
+        cancelText="No guardar"
+        onConfirm={handleSaveConfirm}
+        onCancel={() => setShowSaveDialog(false)}
+      />
+    </>
+  );
+}
+```
+
+### Features
+
+- **Modal overlay** — Blocks interaction with background content
+- **Centered layout** — Responsive design with mobile-friendly padding
+- **Dual action buttons** — Cancel and confirm with distinct styling
+- **Conditional rendering** — Only renders when `isOpen` is true
+- **High z-index** — Appears above other content (z-50)
+
+## SuccessMessage Component
+
+Auto-dismissing success notification component with icon and message display.
+
+**Location:** `src/components/SuccessMessage.jsx`
+
+### Props
+
+<ParamField path="isOpen" type="boolean" required>
+  Controls message visibility
+</ParamField>
+
+<ParamField path="title" type="string" required>
+  Success message title
+</ParamField>
+
+<ParamField path="message" type="string" required>
+  Success message description
+</ParamField>
+
+<ParamField path="onClose" type="() => void" required>
+  Callback when message auto-dismisses after 2 seconds
+</ParamField>
+
+### Implementation
+
+```jsx SuccessMessage.jsx
+import React, { useEffect } from "react";
+
+export default function SuccessMessage({ isOpen, title, message, onClose }) {
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(onClose, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
+        <div className="text-5xl mb-4">✓</div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
+        <p className="text-gray-600 text-lg">{message}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Usage Example
+
+```jsx
+import SuccessMessage from './SuccessMessage';
+
+function AgregarLogo() {
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const handleSave = () => {
+    // Save logic...
+    setSuccessMessage("Tus cambios han sido guardados correctamente");
+    setShowSuccessMessage(true);
+  };
+
+  return (
+    <SuccessMessage
+      isOpen={showSuccessMessage}
+      title="¡Éxito!"
+      message={successMessage}
+      onClose={() => setShowSuccessMessage(false)}
+    />
+  );
+}
+```
+
+### Features
+
+- **Auto-dismiss** — Automatically closes after 2 seconds
+- **Success icon** — Large checkmark (✓) for visual feedback
+- **Modal overlay** — Semi-transparent background
+- **Centered design** — Clean, centered layout
+- **useEffect cleanup** — Properly clears timeout on unmount
+
+<Note>
+The 2-second auto-dismiss timer is hardcoded. If you need a different duration, pass it as a prop.
+</Note>
+
+## Header & Footer Components
+
+Navigation and layout components that wrap the main application content.
+
+### Header Component
+
+**Location:** `src/components/Header.jsx`
+
+Simple navigation header displayed at the top of all pages. Used in RouterApp as a persistent element.
+
+```jsx
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+
+const RouterApp = () => {
+  return (
+    <>
+      <Header />
+      <Routes>
+        {/* routes */}
+      </Routes>
+      <Footer />
+    </>
+  );
+};
+```
+
+### Footer Component
+
+**Location:** `src/components/Footer.jsx`
+
+Footer section displayed at the bottom of all pages. Provides consistent layout and branding across the application.
+
+<Info>
+Both Header and Footer components are rendered once in RouterApp and persist across all routes.
+</Info>
