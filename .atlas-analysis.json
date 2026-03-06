@@ -1,0 +1,76 @@
+{
+  "projectType": "saas",
+  "projectName": "Dark Lion Custom Uniforms",
+  "projectDescription": "Interactive esports uniform customization platform with 3D visualization and order management",
+  "theme": "almond",
+  "primaryColor": "#f1d262",
+  "lightColor": "#7c6c34",
+  "darkColor": "#19160b",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/customization",
+              "features/3d-viewer",
+              "features/team-management",
+              "features/order-process"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/design-workflow",
+              "guides/best-practices",
+              "guides/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Component Reference",
+            "pages": [
+              "components/overview",
+              "components/sidebar",
+              "components/shirt-viewer",
+              "components/forms"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Interactive 3D shirt visualization using React Three Fiber",
+    "Multi-step customization workflow (fabric, design, colors, text, logo)",
+    "Player roster management with individual jersey customization",
+    "Logo upload and team branding",
+    "Real-time design preview",
+    "Order management and contact form integration",
+    "Four shirt style options: V-neck, Round neck, Tank top, Camisola"
+  ],
+  "publicApiSurface": [
+    "Home - Landing page with shirt selection",
+    "Customize - Main customization interface with sidebar controls",
+    "Sidebar - Collapsible sections for fabric, colors, text, logo, players",
+    "ShirtViewer3D - Three.js 3D model viewer",
+    "AgregarLogo - Logo upload component",
+    "SelectedData - Order summary and player details",
+    "ContactForm - Customer contact information form",
+    "ColorPalette - Color selection component with 42 preset colors",
+    "PlayersSection - Player roster management interface"
+  ]
+}
