@@ -1,0 +1,649 @@
+---
+title: Forms & Data Display
+description: ContactForm for user input and SelectedDataSidebar for design summary with ColorSwatch utility
+---
+
+## Overview
+
+This page documents form components and data display components used for user input collection and design summary presentation.
+
+## ContactForm Component
+
+Form for capturing contact information with field-level validation and error display.
+
+**Location:** `src/components/ContactForm.jsx`
+
+### Props
+
+<ParamField path="data" type="object" required>
+  Contact form data object
+  ```typescript
+  {
+    nombre: string,
+    telefono: string,
+    correo: string
+  }
+  ```
+</ParamField>
+
+<ParamField path="onChange" type="(field: string, value: string) => void" required>
+  Callback when any field changes
+</ParamField>
+
+<ParamField path="onCancel" type="() => void" required>
+  Callback for cancel button
+</ParamField>
+
+<ParamField path="onSubmit" type="() => void" required>
+  Callback for submit button
+</ParamField>
+
+<ParamField path="sending" type="boolean" default="false">
+  Loading state - disables buttons when true
+</ParamField>
+
+<ParamField path="fieldErrors" type="object">
+  Field-specific error messages
+  ```typescript
+  {
+    nombre?: string,
+    telefono?: string,
+    correo?: string
+  }
+  ```
+</ParamField>
+
+### Implementation
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default function ContactForm({ 
+  data, 
+  onChange, 
+  onCancel, 
+  onSubmit, 
+  sending, 
+  fieldErrors 
+}) {
+  const handleChange = (field) => (e) => {
+    onChange(field, e.target.value);
+  };
+
+  return (
+    <aside
+      aria-label="Formulario de datos de contacto"
+      className="
+        sticky top-24 left-0 w-90 max-h-[calc(150vh-200px)]
+        backdrop-blur rounded-2xl shadow-xl p-5 overflow-y-auto z-20 m-5
+      "
+    >
+      <h2 className="text-2xl font-bold text-center py-8 rounded-t-2xl 
+                     bg-personalizado to-purple-40 -mx-5 mb-8">
+        DATOS DE CONTACTO
+      </h2>
+      
+      <div className="space-y-6">
+        {/* Nombre field */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Nombre
+          </label>
+          <input
+            type="text"
+            value={data.nombre}
+            onChange={handleChange('nombre')}
+            placeholder="Tu nombre"
+            className={`w-full px-3 py-2 border-b-2 transition text-sm 
+                       focus:outline-none ${
+              fieldErrors?.nombre
+                ? 'border-red-500 focus:border-red-600'
+                : 'border-gray-300 focus:border-purple-600'
+            }`}
+          />
+          {fieldErrors?.nombre && (
+            <p className="text-sm text-red-600 mt-2">{fieldErrors.nombre}</p>
+          )}
+        </div>
+
+        {/* Similar structure for telefono and correo */}
+        
+        <div className="flex flex-col gap-3 mt-8">
+          <button
+            onClick={onCancel}
+            disabled={sending}
+            className="w-full px-4 py-2 bg-gray-300 hover:bg-gray-400 
+                       text-gray-800 font-semibold rounded-lg transition 
+                       disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={sending}
+            className="w-full px-4 py-2 
+                       bg-gradient-to-r from-purple-600 to-pink-600 
+                       hover:from-purple-700 hover:to-pink-700 
+                       text-white font-semibold rounded-lg transition 
+                       disabled:opacity-50"
+          >
+            {sending ? 'Enviando...' : 'Contactame'}
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+```
+
+### Field Validation
+
+The component displays field-specific errors passed via `fieldErrors` prop:
+
+```jsx
+{fieldErrors?.nombre && (
+  <p className="text-sm text-red-600 mt-2">{fieldErrors.nombre}</p>
+)}
+```
+
+**Visual Feedback:**
+- Border changes from `border-gray-300` to `border-red-500` on error
+- Error message appears below the input field
+- Focus state adapts to error state
+
+### Usage Example
+
+```jsx
+import { useState } from 'react';
+import ContactForm from './components/ContactForm';
+
+function ContactPage() {
+  const [contactData, setContactData] = useState({
+    nombre: '',
+    telefono: '',
+    correo: ''
+  });
+  const [errors, setErrors] = useState(null);
+  const [sending, setSending] = useState(false);
+
+  const handleChange = (field, value) => {
+    setContactData(prev => ({ ...prev, [field]: value }));
+    // Clear error for this field
+    if (errors?.[field]) {
+      setErrors(prev => ({ ...prev, [field]: null }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    // Validate
+    const newErrors = {};
+    if (!contactData.nombre) newErrors.nombre = 'El nombre es requerido';
+    if (!contactData.telefono) newErrors.telefono = 'El teléfono es requerido';
+    if (!contactData.correo) {
+      newErrors.correo = 'El correo es requerido';
+    } else if (!/\S+@\S+\.\S+/.test(contactData.correo)) {
+      newErrors.correo = 'Correo inválido';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Submit
+    setSending(true);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        body: JSON.stringify(contactData),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      // Handle success
+    } catch (error) {
+      // Handle error
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setContactData({ nombre: '', telefono: '', correo: '' });
+    setErrors(null);
+  };
+
+  return (
+    <ContactForm
+      data={contactData}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      sending={sending}
+      fieldErrors={errors}
+    />
+  );
+}
+```
+
+### Accessibility
+
+- **aria-label**: "Formulario de datos de contacto"
+- **Semantic labels**: Each input has a visible label
+- **Error announcements**: Error messages are associated with inputs
+- **Disabled state**: Buttons are disabled during submission
+- **Focus management**: Native input focus handling
+
+### Styling Details
+
+<Tabs>
+  <Tab title="Container">
+    ```jsx
+    className="sticky top-24 left-0 w-90 max-h-[calc(150vh-200px)]
+               backdrop-blur rounded-2xl shadow-xl p-5 
+               overflow-y-auto z-20 m-5"
+    ```
+    - Sticky positioning at 24 units from top
+    - Fixed width of 90 units
+    - Scrollable with backdrop blur effect
+  </Tab>
+  <Tab title="Inputs">
+    ```jsx
+    className="w-full px-3 py-2 border-b-2 transition text-sm
+               focus:outline-none border-gray-300 focus:border-purple-600"
+    ```
+    - Bottom border only (modern underline style)
+    - Focus changes border from gray to purple
+    - Error state changes to red
+  </Tab>
+  <Tab title="Buttons">
+    ```jsx
+    // Cancel
+    className="bg-gray-300 hover:bg-gray-400 text-gray-800"
+    
+    // Submit
+    className="bg-gradient-to-r from-purple-600 to-pink-600
+               hover:from-purple-700 hover:to-pink-700 text-white"
+    ```
+    - Gradient background for primary action
+    - Disabled state reduces opacity
+  </Tab>
+</Tabs>
+
+## SelectedDataSidebar Component
+
+Displays a summary of the current design configuration and player roster.
+
+**Location:** `src/components/SelectedDataSidebar.jsx`
+
+### Props
+
+<ParamField path="design" type="object" required>
+  Design configuration object
+  ```typescript
+  {
+    fabricType: string,
+    design: string,           // Image path
+    teamName: string,
+    teamFont: string,
+    playerName: string,
+    playerFont: string,
+    logoUrl: string,
+    colors: {
+      torso: string,
+      back: string,
+      sleeves: string,
+      collar: string
+    }
+  }
+  ```
+</ParamField>
+
+<ParamField path="players" type="Player[]" required>
+  Array of player objects
+  ```typescript
+  Array<{
+    id: number,
+    name: string,
+    gender: 'H' | 'M' | 'Ñ',
+    jersey: 'S' | 'M' | 'L',
+    number: number | string,
+    quantity: number
+  }>
+  ```
+</ParamField>
+
+<ParamField path="onEdit" type="() => void" required>
+  Callback for "Editar Uniforme" button
+</ParamField>
+
+<ParamField path="onSend" type="() => void" required>
+  Callback for "Enviar Uniforme" button
+</ParamField>
+
+### Implementation
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+import ColorSwatch from './ColorSwatch';
+
+export default function SelectedDataSidebar({ design, players, onEdit, onSend }) {
+  const renderPlayers = () => {
+    if (!players || players.length === 0) {
+      return <p className="text-xs">Sin jugadores</p>;
+    }
+    return (
+      <div className="space-y-2 text-xs">
+        {players.map((p, i) => (
+          <div key={p.id || i} className="bg-purple-100 p-2 rounded">
+            <p><strong>{p.name || `Jugador ${i + 1}`}</strong></p>
+            <p>Género: {p.gender || '—'} | Jersey: {p.jersey || '—'} | Nº {p.number || '—'}</p>
+            <p>Cant: {p.quantity || 0}</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <aside
+      aria-label="Panel de datos seleccionados"
+      className="sticky top-24 left-0 w-90 max-h-[calc(100vh-200px)]
+                 backdrop-blur rounded-2xl shadow-xl p-5 
+                 overflow-y-auto z-20 m-5"
+    >
+      <nav className="space-y-6">
+        {/* Configuration */}
+        <div>
+          <h3 className="font-bold text-lg mb-3">Configuración</h3>
+          <ul className="space-y-2 text-xs">
+            <li><strong>Tela:</strong> {design.fabricType || '—'}</li>
+            <li>
+              <strong>Diseño:</strong>{' '}
+              {design.design ? (
+                <img src={design.design} alt="design" className="w-12 h-12 inline" />
+              ) : '—'}
+            </li>
+            <li><strong>Equipo:</strong> {design.teamName || '—'}</li>
+            <li><strong>Fuente equipo:</strong> {design.teamFont || '—'}</li>
+            <li><strong>Jugador:</strong> {design.playerName || '—'}</li>
+            <li><strong>Fuente jugador:</strong> {design.playerFont || '—'}</li>
+            <li>
+              <strong>Logo:</strong>{' '}
+              {design.logoUrl ? (
+                <img src={design.logoUrl} alt="logo" className="w-12 h-12 inline" />
+              ) : '—'}
+            </li>
+          </ul>
+        </div>
+
+        {/* Colors */}
+        <div>
+          <h3 className="font-bold text-lg mb-3">Colores</h3>
+          <ul className="space-y-2 text-xs">
+            <li>
+              <strong>Cuerpo:</strong> <ColorSwatch color={design.colors?.torso} />
+            </li>
+            <li>
+              <strong>Espalda:</strong> <ColorSwatch color={design.colors?.back} />
+            </li>
+            <li>
+              <strong>Mangas:</strong> <ColorSwatch color={design.colors?.sleeves} />
+            </li>
+            <li>
+              <strong>Cuello:</strong> <ColorSwatch color={design.colors?.collar} />
+            </li>
+          </ul>
+        </div>
+
+        {/* Players */}
+        <div>
+          <h3 className="font-bold text-lg mb-3">Jugadores</h3>
+          {renderPlayers()}
+        </div>
+
+        {/* Buttons */}
+        <button
+          onClick={onEdit}
+          className="w-full mt-4 px-4 py-2 bg-purple-600 
+                     hover:bg-purple-700 text-white font-semibold 
+                     rounded-lg transition"
+        >
+          Editar Uniforme
+        </button>
+
+        <button
+          onClick={onSend}
+          className="w-full px-4 py-2 bg-green-600 
+                     hover:bg-green-700 text-white font-semibold 
+                     rounded-lg transition"
+        >
+          Enviar Uniforme
+        </button>
+      </nav>
+    </aside>
+  );
+}
+```
+
+### renderPlayers Function
+
+Internal helper that renders player list:
+
+```jsx
+const renderPlayers = () => {
+  if (!players || players.length === 0) {
+    return <p className="text-xs">Sin jugadores</p>;
+  }
+  return (
+    <div className="space-y-2 text-xs">
+      {players.map((p, i) => (
+        <div key={p.id || i} className="bg-purple-100 p-2 rounded">
+          <p><strong>{p.name || `Jugador ${i + 1}`}</strong></p>
+          <p>
+            Género: {p.gender || '—'} | 
+            Jersey: {p.jersey || '—'} | 
+            Nº {p.number || '—'}
+          </p>
+          <p>Cant: {p.quantity || 0}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+**Fallback behavior:**
+- Shows "Sin jugadores" if array is empty or null
+- Uses array index if `id` is missing
+- Displays "—" for missing fields
+- Shows `Jugador ${i + 1}` if name is empty
+
+### Usage Example
+
+```jsx
+import { useNavigate, useLocation } from 'react-router-dom';
+import SelectedDataSidebar from './components/SelectedDataSidebar';
+
+function ReviewPage() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const { design, players, modelo } = state;
+
+  const handleEdit = () => {
+    navigate(`/personalizar/${modelo}`, { 
+      state: { design, players } 
+    });
+  };
+
+  const handleSend = async () => {
+    // Send design to backend or email
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        body: JSON.stringify({ design, players }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      navigate('/success');
+    } catch (error) {
+      console.error('Failed to send order:', error);
+    }
+  };
+
+  return (
+    <div className="flex">
+      <SelectedDataSidebar
+        design={design}
+        players={players}
+        onEdit={handleEdit}
+        onSend={handleSend}
+      />
+      <main className="flex-1">
+        {/* Preview area */}
+      </main>
+    </div>
+  );
+}
+```
+
+## ColorSwatch Component
+
+Utility component for displaying color values as visual swatches.
+
+**Location:** `src/components/ColorSwatch.jsx`
+
+### Props
+
+<ParamField path="color" type="string">
+  RGB color string (e.g., "rgb(255, 0, 0)")
+</ParamField>
+
+<ParamField path="title" type="string">
+  Tooltip text on hover (defaults to color value)
+</ParamField>
+
+### Implementation
+
+```jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default function ColorSwatch({ color, title }) {
+  if (!color) return <span>—</span>;
+  return (
+    <span
+      className="inline-block w-6 h-6 rounded border border-gray-300 ml-1"
+      style={{ backgroundColor: color }}
+      title={title || color}
+    />
+  );
+}
+
+ColorSwatch.propTypes = {
+  color: PropTypes.string,
+  title: PropTypes.string,
+};
+```
+
+### Features
+
+- **Null handling**: Returns "—" if no color provided
+- **Visual representation**: 24x24px square with rounded corners
+- **Tooltip**: Shows color value or custom title on hover
+- **Border**: Gray border for visibility on light backgrounds
+
+### Usage
+
+```jsx
+import ColorSwatch from './components/ColorSwatch';
+
+// Basic usage
+<ColorSwatch color="rgb(178, 34, 34)" />
+
+// With custom title
+<ColorSwatch color="rgb(0, 0, 255)" title="Team Blue" />
+
+// In a list
+<ul>
+  <li>Torso: <ColorSwatch color={design.colors.torso} /></li>
+  <li>Sleeves: <ColorSwatch color={design.colors.sleeves} /></li>
+</ul>
+```
+
+## PropTypes Validation
+
+All components use PropTypes for runtime type checking:
+
+### ContactForm PropTypes
+
+```jsx
+ContactForm.propTypes = {
+  data: PropTypes.shape({
+    nombre: PropTypes.string,
+    telefono: PropTypes.string,
+    correo: PropTypes.string,
+  }).isRequired,
+  onChange: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  sending: PropTypes.bool,
+  fieldErrors: PropTypes.shape({
+    nombre: PropTypes.string,
+    telefono: PropTypes.string,
+    correo: PropTypes.string,
+  }),
+};
+```
+
+### SelectedDataSidebar PropTypes
+
+```jsx
+SelectedDataSidebar.propTypes = {
+  design: PropTypes.object.isRequired,
+  players: PropTypes.array.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onSend: PropTypes.func.isRequired,
+};
+```
+
+<Note>
+**TypeScript Alternative**: For better type safety, consider converting to TypeScript with proper interface definitions.
+</Note>
+
+## Integration Patterns
+
+### Page Flow
+
+```
+1. Sidebar (Customization)
+   ↓ Save button
+2. SelectedDataSidebar (Review)
+   ↓ Send button
+3. ContactForm (Contact Info)
+   ↓ Submit
+4. Success/Confirmation Page
+```
+
+### State Management
+
+Design data flows through React Router location state:
+
+```jsx
+// From Sidebar
+navigate('/datos-seleccionados', { 
+  state: { design, players, modelo } 
+});
+
+// To SelectedDataSidebar
+const { state } = useLocation();
+const { design, players } = state;
+
+// Back to Sidebar with preserved state
+navigate(`/personalizar/${modelo}`, { 
+  state: { design, players } 
+});
+```
+
+<Warning>
+**State Persistence**: Location state is lost on page refresh. Consider using localStorage or sessionStorage for persistence.
+</Warning>

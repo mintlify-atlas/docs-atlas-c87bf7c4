@@ -1,0 +1,590 @@
+---
+title: 'Team Management'
+description: 'Comprehensive team roster management system for tracking player details and uniform specifications'
+icon: 'users'
+---
+
+## Overview
+
+The Team Management feature allows esports teams to build complete rosters with detailed player information and uniform specifications. Each player entry includes personal details, size preferences, jersey numbers, and quantity requirements, providing a comprehensive order management system.
+
+<Note>
+  Team rosters are saved along with your uniform design and can be edited at any time before final submission.
+</Note>
+
+## Player Management Interface
+
+The team management system is integrated into the customization sidebar under the "Agregar Jugadores" section (`src/components/Sidebar.jsx:151-153`).
+
+### Default Player
+
+The system initializes with one sample player to demonstrate the format:
+
+```javascript
+{
+  id: 1,
+  name: "Arath B.",
+  gender: "H",
+  jersey: "L",
+  number: 21,
+  quantity: 21
+}
+```
+
+**Code Reference**: `src/components/Sidebar.jsx:30-32`
+
+## Player Information Fields
+
+Each player entry captures comprehensive information for uniform production:
+
+<CardGroup cols={2}>
+  <Card title="Name" icon="user">
+    Full player name
+    
+    - Text input field
+    - Required for identification
+    - Appears on uniform order
+  </Card>
+  
+  <Card title="Gender" icon="venus-mars">
+    Player gender category
+    
+    - H: Hombre (Male)
+    - M: Mujer (Female)  
+    - Ñ: Niño (Youth)
+  </Card>
+  
+  <Card title="Jersey Size" icon="shirt">
+    Uniform size specification
+    
+    - S: Small
+    - M: Medium
+    - L: Large
+  </Card>
+  
+  <Card title="Number" icon="hashtag">
+    Player jersey number
+    
+    - Numeric input
+    - Optional field
+    - Appears on uniform
+  </Card>
+  
+  <Card title="Quantity" icon="calculator">
+    Number of jerseys
+    
+    - Numeric input
+    - Default: 1
+    - Used for inventory
+  </Card>
+  
+  <Card title="Preview" icon="eye">
+    Visual inspection
+    
+    - Eye icon button
+    - View player-specific design
+    - Quick validation
+  </Card>
+</CardGroup>
+
+## User Interface Components
+
+### Player Card Layout
+
+Each player is represented by a card with two rows of information:
+
+#### Top Row: Quick Details
+
+```javascript
+<div className="flex items-end gap-2">
+  <button className="bg-personalizado-click p-2 rounded-lg shadow">
+    <EyeIcon className="w-5 h-5" />
+  </button>
+  {/* Gender dropdown */}
+  {/* Jersey size dropdown */}
+  {/* Number input */}
+  {/* Quantity input */}
+  {/* Delete button */}
+</div>
+```
+
+**Features**:
+- **Preview button**: Eye icon for quick inspection
+- **Compact selectors**: Dropdown menus for gender and size
+- **Numeric inputs**: Number and quantity fields
+- **Delete button**: Red "✕" for removal
+
+**Code Reference**: `src/components/Sidebar.jsx:448-529`
+
+#### Bottom Row: Player Name
+
+```javascript
+<input
+  type="text"
+  placeholder="Nombre del jugador"
+  value={player.name}
+  onChange={(e) => handleChange(player.id, 'name', e.target.value)}
+  className="w-full bg-purple-200 rounded-lg px-3 py-2 shadow"
+/>
+```
+
+**Features**:
+- **Full-width input**: Spans entire card width
+- **Placeholder text**: "Nombre del jugador"
+- **Styled background**: Purple tint for visual consistency
+- **Real-time updates**: Changes saved immediately
+
+**Code Reference**: `src/components/Sidebar.jsx:531-539`
+
+## Interactive Features
+
+### 1. Adding Players
+
+Add new team members with the green "+" button:
+
+```javascript
+const handleAdd = () => {
+  const newPlayer = {
+    id: Date.now(),
+    name: "",
+    gender: "",
+    jersey: "",
+    number: "",
+    quantity: 1,
+  };
+  setPlayers([...players, newPlayer]);
+};
+```
+
+**Process**:
+1. Click the green "+" button at the bottom of the player section
+2. A new blank player card is added to the roster
+3. Unique ID is generated using timestamp
+4. Default quantity is set to 1
+5. All other fields start empty
+
+**Code Reference**: `src/components/Sidebar.jsx:418-428`
+
+<Tip>
+  The "+" button is positioned at the bottom-right of the player section for easy access. You can add unlimited players to your roster.
+</Tip>
+
+### 2. Removing Players
+
+Delete players with the red "✕" button on each card:
+
+```javascript
+const handleRemove = (id) => {
+  setPlayers(players.filter((p) => p.id !== id));
+};
+```
+
+**Features**:
+- **Confirmation**: Click red "✕" to remove
+- **Instant update**: Player is immediately removed from roster
+- **Filtered state**: Uses array filter to remove by ID
+- **No undo**: Deletion is immediate (design can be re-edited)
+
+**Code Reference**: `src/components/Sidebar.jsx:430-432`
+
+<Warning>
+  Removing a player deletes all their information. If you save the uniform design after deletion, the player data cannot be recovered.
+</Warning>
+
+### 3. Editing Player Details
+
+All player fields support real-time editing:
+
+```javascript
+const handleChange = (id, field, value) => {
+  setPlayers(
+    players.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
+  );
+};
+```
+
+**Update Logic**:
+- Find player by unique ID
+- Update only the changed field
+- Preserve all other player data
+- Trigger re-render with new state
+
+**Code Reference**: `src/components/Sidebar.jsx:434-438`
+
+### 4. Player Selection
+
+Click any player card to select it:
+
+```javascript
+const [selectedId, setSelectedId] = useState(null);
+
+<div
+  onClick={() => setSelectedId(player.id)}
+  className={`${selectedId === player.id ? "ring-2 ring-purple-500" : ""}`}
+>
+```
+
+**Visual Feedback**:
+- **Purple ring**: 2px border around selected player
+- **Click anywhere**: Entire card is clickable
+- **Single selection**: Only one player selected at a time
+- **Purpose**: Indicates focus for preview or editing
+
+**Code Reference**: `src/components/Sidebar.jsx:416, 443-446`
+
+## Field Specifications
+
+### Gender Dropdown
+
+<Tabs>
+  <Tab title="Hombre (H)">
+    Male category
+    
+    - Standard men's sizing
+    - Mapped to "CABALLERO" in order processing
+    - Most common selection for esports teams
+    
+    **Code Reference**: `src/components/Sidebar.jsx:467`
+  </Tab>
+  
+  <Tab title="Mujer (M)">
+    Female category
+    
+    - Women's fit specifications
+    - Mapped to "DAMA" in order processing
+    - Different sizing from men's
+    
+    **Code Reference**: `src/components/Sidebar.jsx:468`
+  </Tab>
+  
+  <Tab title="Niño (Ñ)">
+    Youth category
+    
+    - Children's sizing
+    - Smaller dimensions than adult sizes
+    - Separate size chart
+    
+    **Code Reference**: `src/components/Sidebar.jsx:469`
+  </Tab>
+</Tabs>
+
+### Jersey Size Dropdown
+
+Three standard size options:
+
+<CardGroup cols={3}>
+  <Card title="S" icon="shirt">
+    Small size
+    
+    Best for smaller builds
+  </Card>
+  
+  <Card title="M" icon="shirt">
+    Medium size
+    
+    Most common selection
+  </Card>
+  
+  <Card title="L" icon="shirt">
+    Large size
+    
+    Best for larger builds
+  </Card>
+</CardGroup>
+
+**Code Reference**: `src/components/Sidebar.jsx:485-487`
+
+<Note>
+  Size availability may vary based on gender selection. Refer to the size chart for specific measurements.
+</Note>
+
+### Number Field
+
+Jersey number specification:
+
+- **Type**: Numeric input
+- **Optional**: Can be left blank
+- **Validation**: Accepts any number
+- **Display**: Appears on the uniform back
+- **Width**: Fixed at 14 units (w-14)
+
+**Code Reference**: `src/components/Sidebar.jsx:492-503`
+
+### Quantity Field
+
+Number of jerseys per player:
+
+- **Type**: Numeric input
+- **Default**: 1
+- **Purpose**: Inventory management
+- **Use case**: Multiple jerseys per player (home/away)
+- **Width**: Fixed at 14 units (w-14)
+
+**Code Reference**: `src/components/Sidebar.jsx:506-517`
+
+## Data Processing
+
+When the uniform is saved, player data is processed for order submission:
+
+### Roster Aggregation
+
+Player data is aggregated by size and gender:
+
+```javascript
+const tallasMap = {};
+players.forEach((p) => {
+  const tipo = p.gender === "H" ? "CABALLERO" : 
+               p.gender === "M" ? "DAMA" : p.gender;
+  const talla = p.jersey || "";
+  const key = `${tipo}-${talla}`;
+  if (!tallasMap[key]) {
+    tallasMap[key] = { tipo, talla, cantidad: 0 };
+  }
+  tallasMap[key].cantidad += p.quantity || 0;
+});
+const tallas = Object.values(tallasMap);
+```
+
+**Aggregation Logic**:
+1. Group players by gender and size combination
+2. Sum quantities for each group
+3. Generate tallas array for inventory
+4. Used for production planning
+
+**Code Reference**: `src/pages/SelectedData.jsx:88-101`
+
+### Individual Player List
+
+Each player's details are preserved in the order:
+
+```javascript
+listado: players.map((p) => {
+  const item = {
+    nombre: p.name || "",
+    talla: p.jersey || "",
+    cantidad: p.quantity || 0,
+    genero: p.gender === "H" ? "CABALLERO" : 
+            p.gender === "M" ? "DAMA" : p.gender,
+  };
+  if (p.number !== undefined && p.number !== null && p.number !== "") {
+    item.numero = p.number;
+  }
+  return item;
+})
+```
+
+**Features**:
+- Complete player information
+- Optional number field (only included if provided)
+- Gender mapped to Spanish terms
+- Empty fields handled with defaults
+
+**Code Reference**: `src/pages/SelectedData.jsx:111-123`
+
+## Review Page Display
+
+Player roster is displayed on the review page (`src/pages/SelectedData.jsx`):
+
+### Player Cards
+
+```javascript
+{players.map((p, i) => (
+  <div key={p.id || i} className="bg-purple-100 p-2 rounded">
+    <p><strong>{p.name || `Jugador ${i + 1}`}</strong></p>
+    <p>Género: {p.gender || "—"} | Jersey: {p.jersey || "—"} | Nº {p.number || "—"}</p>
+    <p>Cant: {p.quantity}</p>
+  </div>
+))}
+```
+
+**Display Features**:
+- **Purple background**: Consistent with brand styling
+- **Fallback names**: "Jugador 1", "Jugador 2", etc. if name is empty
+- **Compact layout**: All info visible at a glance
+- **Dash placeholders**: "—" for empty optional fields
+
+**Code Reference**: `src/pages/SelectedData.jsx:312-330`
+
+## State Management
+
+### Component State
+
+Player data is managed in the Sidebar component:
+
+```javascript
+const [players, setPlayers] = useState([
+  { id: 1, name: "Arath B.", gender: "H", jersey: "L", number: 21, quantity: 21 },
+]);
+```
+
+**State Features**:
+- Array of player objects
+- Each player has unique ID
+- Default player for demonstration
+- Updated via setPlayers function
+
+**Code Reference**: `src/components/Sidebar.jsx:30-32`
+
+### State Persistence
+
+Player data persists through navigation:
+
+```javascript
+useEffect(() => {
+  if (locationState?.players) {
+    setPlayers(locationState.players);
+  }
+}, [locationState]);
+```
+
+**Restoration Process**:
+1. Check location state for existing player data
+2. Restore players array if available
+3. Maintains roster when returning from review page
+4. No data loss during navigation
+
+**Code Reference**: `src/components/Sidebar.jsx:48-50`
+
+### Saving Player Data
+
+Players are saved along with design data:
+
+```javascript
+const handleSave = () => {
+  const designData = { /* ... */ };
+  navigate("/datos-seleccionados", { 
+    state: { design: designData, players, modelo } 
+  });
+};
+```
+
+**Save Process**:
+1. Collect all design customization data
+2. Include entire players array
+3. Pass via React Router state
+4. Navigate to review page
+
+**Code Reference**: `src/components/Sidebar.jsx:53-56`
+
+## Styling and UX
+
+### Visual Design
+
+Player cards feature consistent styling:
+
+<AccordionGroup>
+  <Accordion title="Color Scheme" icon="palette">
+    - **Background**: Purple-200 for inputs
+    - **Selection ring**: Purple-500 for active player
+    - **Delete button**: Red-500 background
+    - **Add button**: Green-600 background
+    - **Preview button**: Custom personalizado-click color
+  </Accordion>
+  
+  <Accordion title="Layout" icon="table-cells">
+    - **Spacing**: gap-2 between elements
+    - **Padding**: p-2 on buttons, px-3 py-2 on inputs
+    - **Rounding**: rounded-lg for all interactive elements
+    - **Shadows**: shadow class for depth
+  </Accordion>
+  
+  <Accordion title="Typography" icon="font">
+    - **Labels**: text-xs for field labels
+    - **Inputs**: Standard text size
+    - **Buttons**: text-xl for "+" button
+    - **Icons**: w-5 h-5 for consistent sizing
+  </Accordion>
+</AccordionGroup>
+
+### Interaction Patterns
+
+<Tip>
+  **Best practices for team management**:
+  - Add all players before saving your design
+  - Use descriptive player names for easy identification
+  - Set accurate quantities for inventory planning
+  - Preview individual player designs with the eye icon
+  - Select a player before previewing to ensure correct data
+</Tip>
+
+## API Integration
+
+Player data is sent to the backend API when submitting the order:
+
+### Endpoint
+
+```
+POST https://api-darklion.onrender.com/api/designs/client-and-design
+```
+
+### Payload Structure
+
+```json
+{
+  "tallas": [
+    { "tipo": "CABALLERO", "talla": "L", "cantidad": 5 },
+    { "tipo": "DAMA", "talla": "M", "cantidad": 3 }
+  ],
+  "listado": [
+    {
+      "nombre": "Arath B.",
+      "talla": "L",
+      "cantidad": 21,
+      "genero": "CABALLERO",
+      "numero": 21
+    }
+  ]
+}
+```
+
+**Code Reference**: `src/pages/SelectedData.jsx:136-146`
+
+<Warning>
+  Ensure all required player fields are completed before submission. Empty or invalid data may cause order processing errors.
+</Warning>
+
+## Error Handling
+
+### Validation
+
+While the UI allows empty fields, best practices include:
+
+- **Name validation**: Ensure players have names before submission
+- **Size selection**: Verify all players have jersey sizes
+- **Quantity check**: Confirm quantities are greater than 0
+- **Number uniqueness**: Consider validating unique jersey numbers
+
+### Event Propagation
+
+Input fields use `stopPropagation` to prevent parent click handlers:
+
+```javascript
+onClick={(e) => e.stopPropagation()}
+```
+
+**Purpose**:
+- Prevents player selection when editing fields
+- Allows smooth dropdown and input interaction
+- Maintains expected UX behavior
+
+**Code Reference**: `src/components/Sidebar.jsx:464, 480, 500, 514, 538`
+
+## Future Enhancements
+
+<CardGroup cols={2}>
+  <Card title="Import/Export" icon="file-import">
+    Upload roster from CSV or Excel file for bulk entry
+  </Card>
+  
+  <Card title="Validation Rules" icon="shield-check">
+    Real-time validation for required fields and data formats
+  </Card>
+  
+  <Card title="Player Templates" icon="clone">
+    Save player profiles for reuse across multiple orders
+  </Card>
+  
+  <Card title="Size Charts" icon="ruler">
+    Interactive size guide with measurements for each category
+  </Card>
+</CardGroup>

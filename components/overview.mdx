@@ -1,0 +1,270 @@
+---
+title: Component Architecture
+description: Overview of the Dark Lion Custom Uniforms component structure, dependencies, and design patterns
+---
+
+## Architecture Overview
+
+The Dark Lion Custom Uniforms application is built with React 19 and uses a component-based architecture focused on customization workflows and 3D visualization.
+
+### Technology Stack
+
+<CardGroup cols={2}>
+  <Card title="React 19" icon="react">
+    Core UI library with modern hooks and concurrent features
+  </Card>
+  <Card title="React Three Fiber" icon="cube">
+    3D rendering with Three.js integration
+  </Card>
+  <Card title="Tailwind CSS 4" icon="palette">
+    Utility-first styling with custom theme
+  </Card>
+  <Card title="React Router v7" icon="route">
+    Client-side routing and navigation
+  </Card>
+</CardGroup>
+
+## Component Hierarchy
+
+```
+src/components/
+├── Sidebar.jsx                  # Main customization panel
+│   ├── Section                  # Collapsible section wrapper
+│   ├── OptionButton            # Fabric type selector
+│   ├── ColorPalette            # Color picker grid
+│   ├── TextSection             # Team/player name input
+│   ├── LogoUploadLink          # Logo upload trigger
+│   └── PlayersSection          # Player roster management
+│
+├── ShirtViewer3D.jsx           # 3D shirt preview
+│   └── ShirtModel              # GLB model loader
+│
+├── SelectedDataSidebar.jsx     # Design summary view
+│   └── ColorSwatch             # Color display component
+│
+├── ContactForm.jsx             # Contact information form
+├── AgregarLogo.jsx             # Logo placement editor
+├── Header.jsx                  # App header
+└── Footer.jsx                  # App footer
+```
+
+## Key Dependencies
+
+### React Three Fiber
+
+Used for 3D shirt visualization with interactive camera controls.
+
+```jsx
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+```
+
+**Key Features:**
+- GLB model loading
+- Auto-rotation with user controls
+- Ambient and directional lighting
+- Camera positioning
+
+### Heroicons
+
+Provides UI icons throughout the application.
+
+```jsx
+import {
+  ChevronDownIcon,
+  SwatchIcon,
+  PhotoIcon,
+  Square3Stack3DIcon,
+  ArrowUpTrayIcon,
+  EyeIcon,
+} from "@heroicons/react/24/outline";
+```
+
+### Material Tailwind
+
+Listed in dependencies but not actively used in reviewed components. Consider removing if unused.
+
+## State Management
+
+The application uses **React hooks** for state management without external state libraries.
+
+### Local Component State
+
+Most components use `useState` for internal state:
+
+```jsx
+const [fabricType, setFabricType] = useState("");
+const [design, setDesign] = useState("");
+const [colors, setColors] = useState({ torso: "", back: "", sleeves: "", collar: "" });
+```
+
+### Navigation State
+
+Design data is passed between routes using React Router's location state:
+
+```jsx
+navigate("/datos-seleccionados", { 
+  state: { design: designData, players, modelo } 
+});
+```
+
+### State Persistence
+
+State is restored when navigating back:
+
+```jsx
+useEffect(() => {
+  if (locationState?.design) {
+    setFabricType(design.fabricType || "");
+    setDesign(design.design || "");
+    // ... restore other fields
+  }
+}, [locationState]);
+```
+
+<Note>
+The application does not use Redux, Zustand, or other state management libraries. All state is local or passed via navigation.
+</Note>
+
+## Design Patterns
+
+### Compound Components
+
+The `Sidebar` component uses compound components for modular sections:
+
+```jsx
+<Section title="Cuerpo" icon={Square3Stack3DIcon}>
+  <ColorPalette
+    selected={colors.torso}
+    onSelect={(c) => setColors((p) => ({ ...p, torso: c }))}
+  />
+</Section>
+```
+
+### Controlled Components
+
+All form inputs are controlled components:
+
+```jsx
+<input
+  type="text"
+  value={teamName}
+  onChange={(e) => setTeamName(e.target.value)}
+  placeholder="Equipo..."
+/>
+```
+
+### Prop Drilling
+
+Player data is passed down through props:
+
+```jsx
+<PlayersSection players={players} setPlayers={setPlayers} />
+```
+
+<Warning>
+For larger applications, consider implementing Context API or a state management library to avoid deep prop drilling.
+</Warning>
+
+## Styling Approach
+
+### Tailwind Utilities
+
+Primary styling method using utility classes:
+
+```jsx
+className="w-full bg-personalizado py-3 rounded-lg text-lg shadow-sm
+          hover:scale-110 transition-transform duration-200"
+```
+
+### Custom Theme Colors
+
+Custom color variables in Tailwind config:
+
+- `bg-personalizado` - Primary background
+- `bg-personalizado-click` - Interactive elements
+- `bg-personalizado-click-hover` - Hover states
+
+### Custom Fonts
+
+Inline font-family styles:
+
+```jsx
+style={{ fontFamily: "Montserrat1" }}
+style={{ fontFamily: "Arboria" }}
+```
+
+### RGB Color Values
+
+Colors stored as RGB strings:
+
+```jsx
+"rgb(255, 255, 255)"
+"rgb(178, 34, 34)"
+```
+
+## File Organization
+
+```
+src/
+├── components/          # React components
+├── assets/             # Images and static files
+│   └── agregar-logo/   # Logo editor assets
+├── pages/              # Route components (assumed)
+└── main.jsx           # App entry point (assumed)
+```
+
+## Routing Structure
+
+The application uses these key routes:
+
+- `/personalizar/:modelo` - Main customization page with `Sidebar`
+- `/datos-seleccionados` - Design summary with `SelectedDataSidebar`
+- `/agregar-logo` - Logo placement editor
+
+## Component Communication
+
+### Parent to Child
+
+Props pass data down:
+
+```jsx
+<ContactForm
+  data={contactData}
+  onChange={handleChange}
+  onSubmit={handleSubmit}
+  fieldErrors={errors}
+/>
+```
+
+### Child to Parent
+
+Callback functions pass data up:
+
+```jsx
+const handleChange = (field, value) => {
+  setContactData(prev => ({ ...prev, [field]: value }));
+};
+```
+
+### Navigation-Based
+
+Location state for cross-route data:
+
+```jsx
+const { state: locationState } = useLocation();
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Sidebar Component" icon="sliders" href="/components/sidebar">
+    Main customization panel with fabric, color, and text options
+  </Card>
+  <Card title="ShirtViewer3D" icon="cube" href="/components/shirt-viewer">
+    3D rendering component with React Three Fiber
+  </Card>
+  <Card title="Forms" icon="rectangle-list" href="/components/forms">
+    ContactForm and SelectedDataSidebar components
+  </Card>
+</CardGroup>

@@ -1,80 +1,360 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Create your first custom uniform in minutes with Dark Lion's interactive design platform
 ---
 
-## Get started in three steps
-
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+Welcome! This guide will walk you through creating your first custom esports uniform using Dark Lion's interactive 3D customization platform. You'll go from selecting a shirt style to submitting a complete order—all in a few simple steps.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Before you begin:** Make sure you have your team logo ready (if applicable) and a list of player names and numbers for your roster.
 </Note>
+
+## Getting Started
+
+Dark Lion Custom Uniforms is a web-based platform—no installation required. Simply open your browser and navigate to the application homepage to begin.
+
+<Steps>
+  <Step title="Choose Your Shirt Style">
+    On the homepage, you'll see four shirt style options displayed as interactive cards:
+
+    - **CAMISA CUELLO V** — Classic V-neck jersey
+    - **CUELLO REDONDO** — Round neck style
+    - **CAMISOLA** — Sleeveless tank design
+    - **TANK TOP** — Athletic tank top cut
+
+    <Tip>
+      Each card displays a preview image of the style. Click the **Personalizar** button on your preferred style to enter the customization interface.
+    </Tip>
+
+    **Navigation paths:**
+    - V-neck: `/personalizar/cuello-v`
+    - Round neck: `/personalizar/cuello-redondo`
+    - Camisola: `/personalizar/cuello-camisola`
+    - Tank top: `/personalizar/cuello-tank-top`
+
+  </Step>
+
+  <Step title="Select Your Fabric Type">
+    Once in the customization interface, you'll see a **Sidebar** on the left with collapsible sections. Start with **Tipos de Tela** (Fabric Types):
+
+    Available fabric options:
+    - **Microfibra** — Lightweight microfiber
+    - **Poliester** — Durable polyester
+    - **Nylon** — Strong nylon blend
+    - **Dry-Fit** — Moisture-wicking performance fabric
+
+    Click any fabric button to select it. The selected option will be highlighted.
+
+    <Info>
+      All fabrics feature dri-fit technology for optimal performance during gameplay.
+    </Info>
+  </Step>
+
+  <Step title="Choose a Design Pattern">
+    In the **Diseños** section, select from available design templates:
+
+    - Design options appear as clickable images
+    - Click a design to apply it to your uniform
+    - The selected design will show a purple ring indicator
+
+    Your design selection determines the base pattern and layout of your uniform.
+  </Step>
+
+  <Step title="Customize Colors">
+    Dark Lion offers independent color customization for four uniform sections. Each section has its own collapsible panel in the sidebar:
+
+    **Color Sections:**
+    1. **Cuerpo** (Body/Torso) — Front body color
+    2. **Espalda** (Back) — Back panel color
+    3. **Mangas** (Sleeves) — Sleeve color
+    4. **Cuello** (Collar) — Collar/neckline color
+
+    **Color Palette:**
+    - 42 preset colors organized in a 6×7 grid
+    - Includes neutrals, team colors, and accent shades
+    - Click any color swatch to apply it instantly
+    - Selected colors display a purple ring indicator
+
+    <Tip>
+      Create striking combinations by mixing contrasting colors across different sections. The 3D viewer updates in real-time as you select colors.
+    </Tip>
+
+    **Example color values from the palette:**
+    ```jsx
+    // Neutrals and grays
+    "rgb(255, 255, 255)", "rgb(200, 200, 200)", "rgb(80, 80, 80)"
+    
+    // Team colors (reds, blues, greens)
+    "rgb(220, 20, 60)", "rgb(30, 144, 255)", "rgb(34, 139, 34)"
+    
+    // Accent colors
+    "rgb(255, 165, 0)", "rgb(138, 43, 226)", "rgb(255, 192, 203)"
+    ```
+  </Step>
+
+  <Step title="Add Team Name and Font">
+    In the **Nombre del Equipo** (Team Name) section:
+
+    1. Enter your team name in the text input field
+    2. Select a font from four available typography options:
+       - **INTER** — Clean, modern sans-serif
+       - **ACTOR** — Bold display font
+       - **MONTSSERRAT** — Professional and readable
+       - **JOMHURIA** — Decorative display style
+
+    The selected font button will be highlighted when active.
+
+    <Info>
+      The team name typically appears on the front chest area of the uniform.
+    </Info>
+  </Step>
+
+  <Step title="Add Player Name and Font">
+    In the **Nombre del Jugador** (Player Name) section:
+
+    1. Enter a default player name (optional)
+    2. Select a font style from the same four options
+
+    <Note>
+      This field sets the default name styling. Individual player names will be added in the next step.
+    </Note>
+  </Step>
+
+  <Step title="Upload Your Logo">
+    In the **Logo** section:
+
+    1. Click the **UPLOAD** button with the upload icon
+    2. You'll be redirected to `/agregar-logo` (logo upload page)
+    3. Upload your team logo image
+    4. Return to the customization page with your logo applied
+
+    <Tip>
+      For best results, use PNG images with transparent backgrounds. Recommended size: 500×500px or larger.
+    </Tip>
+  </Step>
+
+  <Step title="Add Player Roster">
+    The **Agregar Jugadores** (Add Players) section lets you build your team roster. By default, one player entry is created.
+
+    **For each player, enter:**
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | **Nombre** | Player full name | "Arath B." |
+    | **Gen** | Gender/Category | H (Hombre), M (Mujer), Ñ (Niño) |
+    | **Jersey** | Jersey size | S, M, L |
+    | **Num** | Jersey number | 21 |
+    | **Canti** | Quantity of jerseys | 1-99 |
+
+    **Managing players:**
+    - Click the **green + button** at the bottom to add another player
+    - Click the **red ✕ button** to remove a player
+    - Click the **eye icon** to preview the player's uniform
+
+    <Warning>
+      Ensure all player information is accurate before saving—especially sizes and quantities!
+    </Warning>
+
+    **Example roster setup:**
+    ```jsx
+    // Player entry structure
+    {
+      name: "Arath B.",
+      gender: "H",      // Caballero (Men's)
+      jersey: "L",      // Large
+      number: 21,
+      quantity: 1
+    }
+    ```
+  </Step>
+
+  <Step title="Save Your Design">
+    Once you've configured all customization options:
+
+    1. Click the **Guardar Uniforme** (Save Uniform) button at the bottom of the sidebar
+    2. You'll be redirected to `/datos-seleccionados` (Selected Data page)
+    3. Review your complete design summary
+
+    **What gets saved:**
+    - Fabric type
+    - Design pattern
+    - All color selections (body, back, sleeves, collar)
+    - Team name and font
+    - Player name styling and font
+    - Logo URL
+    - Complete player roster with sizes and quantities
+
+  </Step>
+
+  <Step title="Review Your Order">
+    On the **MI UNIFORME PERSONALIZADO** (My Custom Uniform) page, you'll see:
+
+    **Left Sidebar Summary:**
+    - Complete design configuration
+    - Color swatches for all sections
+    - Full player roster table with details
+
+    **Main Display:**
+    - Large 3D preview of your uniform
+    - Front and back view thumbnails (clickable)
+
+    **Action Buttons:**
+    - **Editar Uniforme** (Edit Uniform) — Returns to customization with all selections preserved
+    - **Enviar Uniforme** (Send Uniform) — Proceeds to contact form
+  </Step>
+
+  <Step title="Submit Your Order">
+    Click **Enviar Uniforme** to open the contact form sidebar:
+
+    **Required Contact Information:**
+
+    | Field | Validation | Example |
+    |-------|-----------|---------|
+    | **Nombre** | Min 3 characters | "Juan Pérez" |
+    | **Teléfono** | Exactly 10 digits | "5512345678" |
+    | **Correo** | Valid email format | "team@example.com" |
+
+    <Warning>
+      All fields are required. The form will display validation errors if any information is missing or invalid.
+    </Warning>
+
+    Once the form is complete, click the submit button. Your order will be sent to the Dark Lion team via API.
+
+    **API Endpoint:**
+    ```
+    POST https://api-darklion.onrender.com/api/designs/client-and-design
+    ```
+
+    **Payload structure:**
+    ```json
+    {
+      "name": "Juan Pérez",
+      "email": "team@example.com",
+      "phone_number": 5512345678,
+      "id_product": 1,
+      "design_file_url": "https://example.com/design.png",
+      "tela": "Dry-Fit",
+      "tallas": [
+        {
+          "tipo": "CABALLERO",
+          "talla": "L",
+          "cantidad": 5
+        }
+      ],
+      "listado": [
+        {
+          "nombre": "Arath B.",
+          "talla": "L",
+          "cantidad": 1,
+          "genero": "CABALLERO",
+          "numero": 21
+        }
+      ]
+    }
+    ```
+
+  </Step>
+
+  <Step title="Order Confirmation">
+    After successful submission:
+
+    1. You'll receive an on-screen success confirmation
+    2. The Dark Lion team will contact you via the provided email or phone number
+    3. They'll confirm details, pricing, and production timeline
+
+    <Check>
+      **Success!** You've created and submitted your first custom uniform design.
+    </Check>
+  </Step>
+</Steps>
+
+## Quick Reference: Customization Options
+
+<AccordionGroup>
+  <Accordion title="Shirt Styles (4)" icon="shirt">
+    - **Cuello V** — V-neck jersey
+    - **Cuello Redondo** — Round neck
+    - **Camisola** — Sleeveless tank
+    - **Tank Top** — Athletic tank top
+  </Accordion>
+
+  <Accordion title="Fabric Types (4)" icon="wand-magic-sparkles">
+    - Microfibra
+    - Poliester
+    - Nylon
+    - Dry-Fit
+  </Accordion>
+
+  <Accordion title="Color Customization (4 sections)" icon="palette">
+    - **Cuerpo** (Body)
+    - **Espalda** (Back)
+    - **Mangas** (Sleeves)
+    - **Cuello** (Collar)
+    
+    42 preset colors available for each section
+  </Accordion>
+
+  <Accordion title="Typography Options (4 fonts)" icon="font">
+    - INTER
+    - ACTOR
+    - MONTSSERRAT
+    - JOMHURIA
+    
+    Available for both team names and player names
+  </Accordion>
+
+  <Accordion title="Player Details" icon="users">
+    For each player, specify:
+    - Name
+    - Gender/Category (H/M/Ñ)
+    - Jersey size (S/M/L)
+    - Jersey number
+    - Quantity
+  </Accordion>
+</AccordionGroup>
+
+## Tips for a Great Design
+
+<CardGroup cols={2}>
+  <Card title="Color Contrast" icon="eye">
+    Choose contrasting colors for body, sleeves, and collar to make design elements pop in the 3D preview.
+  </Card>
+  
+  <Card title="Logo Quality" icon="image">
+    Use high-resolution PNG files with transparent backgrounds for the best logo appearance.
+  </Card>
+  
+  <Card title="Font Pairing" icon="text">
+    Consider using different fonts for team names (bold display) and player names (readable sans-serif).
+  </Card>
+  
+  <Card title="Double-Check Roster" icon="clipboard-check">
+    Verify all player names, numbers, and sizes before submitting—corrections after order submission may delay production.
+  </Card>
+</CardGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Design Workflow" icon="diagram-project" href="/guides/design-workflow">
+    Learn advanced customization techniques and best practices
+  </Card>
+  
+  <Card title="3D Viewer Guide" icon="cube" href="/features/3d-viewer">
+    Explore the interactive 3D visualization features
+  </Card>
+  
+  <Card title="Team Management" icon="users" href="/features/team-management">
+    Master roster management and bulk ordering
+  </Card>
+  
+  <Card title="Order Process" icon="clipboard-check" href="/features/order-process">
+    Understand the complete order-to-delivery workflow
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<Info>
+  **Questions about your design?** The Dark Lion team is ready to assist. Contact information will be available after you submit your initial order request.
+</Info>

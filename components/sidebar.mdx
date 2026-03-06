@@ -1,0 +1,535 @@
+---
+title: Sidebar Component
+description: Main customization panel for fabric selection, color picking, text input, and player roster management
+---
+
+## Overview
+
+The `Sidebar` component is the primary UI for customizing uniforms. It provides a sticky sidebar with collapsible sections for fabric types, designs, colors, text fields, logo upload, and player management.
+
+**Location:** `src/components/Sidebar.jsx`
+
+## Component Structure
+
+```jsx
+export default function Sidebar() {
+  // State management
+  // Event handlers
+  // Render collapsible sections
+}
+```
+
+### Sub-components
+
+<AccordionGroup>
+  <Accordion title="Section" icon="folder">
+    Collapsible section wrapper with header and toggle
+  </Accordion>
+  <Accordion title="OptionButton" icon="square-check">
+    Selectable button for fabric types
+  </Accordion>
+  <Accordion title="ColorPalette" icon="palette">
+    42-color grid picker for shirt parts
+  </Accordion>
+  <Accordion title="TextSection" icon="text">
+    Input field with font selection
+  </Accordion>
+  <Accordion title="LogoUploadLink" icon="upload">
+    Navigation trigger to logo editor
+  </Accordion>
+  <Accordion title="PlayersSection" icon="users">
+    Player roster with add/remove/edit
+  </Accordion>
+</AccordionGroup>
+
+## Props
+
+The `Sidebar` component does not accept props. It manages its own state and uses React Router hooks.
+
+<Note>
+**No Props**: This component is self-contained and pulls route parameters from `useParams()`.
+</Note>
+
+## State Management
+
+### Design State
+
+<ParamField path="fabricType" type="string" default='""'>
+  Selected fabric type: "Microfibra", "Poliester", "Nylon", or "Dry-Fit"
+</ParamField>
+
+<ParamField path="design" type="string" default='""'>
+  Selected design image path (e.g., "/shirt1.png")
+</ParamField>
+
+<ParamField path="colors" type="object" default="{ torso: '', back: '', sleeves: '', collar: '' }">
+  RGB color strings for each shirt part
+</ParamField>
+
+<ParamField path="teamName" type="string" default='""'>
+  Team name to display on uniform
+</ParamField>
+
+<ParamField path="playerNameField" type="string" default='""'>
+  Default player name
+</ParamField>
+
+<ParamField path="logoUrl" type="string" default='""'>
+  URL or data URI of uploaded logo
+</ParamField>
+
+<ParamField path="selectedField" type="string" default="null">
+  Currently focused text field (can be 'team', 'player', or null)
+</ParamField>
+
+<ParamField path="teamFont" type="string" default='""'>
+  Selected font for team name ("INTER", "ACTOR", "MONTSSERRAT", "JOMHURIA")
+</ParamField>
+
+<ParamField path="playerFont" type="string" default='""'>
+  Selected font for player names
+</ParamField>
+
+### Players State
+
+```jsx
+const [players, setPlayers] = useState([
+  { id: 1, name: "Arath B.", gender: "H", jersey: "L", number: 21, quantity: 21 },
+]);
+```
+
+#### Player Object Schema
+
+<ParamField path="id" type="number" required>
+  Unique identifier (timestamp from `Date.now()`)
+</ParamField>
+
+<ParamField path="name" type="string">
+  Player full name
+</ParamField>
+
+<ParamField path="gender" type="'H' | 'M' | 'Ñ' | ''">
+  Gender: H (Hombre), M (Mujer), Ñ (Niño)
+</ParamField>
+
+<ParamField path="jersey" type="'S' | 'M' | 'L' | ''">
+  Jersey size
+</ParamField>
+
+<ParamField path="number" type="number | string">
+  Player jersey number
+</ParamField>
+
+<ParamField path="quantity" type="number" default="1">
+  Quantity of jerseys for this player
+</ParamField>
+
+## Key Functions
+
+### handleSave
+
+Navigates to the design summary page with all design data and players.
+
+```jsx
+const handleSave = () => {
+  const designData = { 
+    fabricType, 
+    design, 
+    colors, 
+    teamName, 
+    playerName: playerNameField, 
+    logoUrl, 
+    teamFont, 
+    playerFont 
+  };
+  navigate("/datos-seleccionados", { 
+    state: { design: designData, players, modelo } 
+  });
+};
+```
+
+**Navigation State:**
+- `design` - All customization options
+- `players` - Player roster array
+- `modelo` - Route parameter for shirt model
+
+### State Restoration
+
+Restores state when navigating back from summary page:
+
+```jsx
+useEffect(() => {
+  if (locationState?.design) {
+    const design = locationState.design;
+    setFabricType(design.fabricType || "");
+    setDesign(design.design || "");
+    setColors(design.colors || { torso: "", back: "", sleeves: "", collar: "" });
+    setTeamName(design.teamName || "");
+    setPlayerNameField(design.playerName || "");
+    setLogoUrl(design.logoUrl || "");
+    setTeamFont(design.teamFont || "");
+    setPlayerFont(design.playerFont || "");
+  }
+  
+  if (locationState?.players) {
+    setPlayers(locationState.players);
+  }
+}, [locationState]);
+```
+
+## Section Component
+
+Collapsible section wrapper used throughout the sidebar.
+
+### Props
+
+<ParamField path="title" type="string" required>
+  Section header text
+</ParamField>
+
+<ParamField path="icon" type="Component" required>
+  Heroicon component to display in header
+</ParamField>
+
+<ParamField path="children" type="ReactNode">
+  Content to display when expanded
+</ParamField>
+
+### Implementation
+
+```jsx
+function Section({ title, icon: Icon, children }) {
+  const [open, setOpen] = useState(true);
+  const id = title.replace(/\s+/g, "-").toLowerCase();
+
+  return (
+    <section>
+      <header>
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={id}
+          style={{ fontFamily: "Arboria" }}
+          className="w-full flex justify-between items-center text-left
+                     transition bg-personalizado px-3 py-2 rounded-lg"
+        >
+          <span className="flex items-center gap-2">
+            {Icon && <Icon className="w-5 h-5 text-purple-700" />}
+            {title}
+          </span>
+          <ChevronDownIcon
+            className={`w-5 h-5 transition-transform duration-200 
+                       ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </header>
+      {open && children && (
+        <div id={id} className="mt-3 grid grid-cols-2 gap-2">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+```
+
+## ColorPalette Component
+
+42-color grid picker with visual feedback.
+
+### Props
+
+<ParamField path="selected" type="string">
+  Currently selected RGB color string
+</ParamField>
+
+<ParamField path="onSelect" type="(color: string) => void">
+  Callback when color is clicked
+</ParamField>
+
+### Color Grid
+
+The palette includes 42 colors organized in 6 rows:
+
+<Tabs>
+  <Tab title="Row 1: Greys">
+    ```jsx
+    "rgb(255, 255, 255)",  // White
+    "rgb(200, 200, 200)",  // Light grey
+    "rgb(150, 150, 150)",  // Medium grey
+    "rgb(120, 120, 120)",  // Dark grey
+    "rgb(80, 80, 80)",     // Darker grey
+    "rgb(40, 40, 40)",     // Near black
+    ```
+  </Tab>
+  <Tab title="Row 2: Reds">
+    ```jsx
+    "rgb(220, 220, 220)",  // Off-white
+    "rgb(139, 69, 69)",    // Brown
+    "rgb(178, 34, 34)",    // Firebrick
+    "rgb(220, 20, 60)",    // Crimson
+    "rgb(250, 128, 114)",  // Salmon
+    "rgb(255, 140, 105)",  // Light salmon
+    ```
+  </Tab>
+  <Tab title="Row 3: Oranges/Yellows">
+    ```jsx
+    "rgb(200, 100, 50)",   // Brown-orange
+    "rgb(255, 127, 80)",   // Coral
+    "rgb(255, 165, 0)",    // Orange
+    "rgb(255, 200, 0)",    // Gold
+    "rgb(240, 230, 150)",  // Khaki
+    "rgb(255, 255, 0)",    // Yellow
+    ```
+  </Tab>
+  <Tab title="Row 4: Greens">
+    ```jsx
+    "rgb(200, 255, 50)",   // Lime
+    "rgb(173, 255, 47)",   // Green-yellow
+    "rgb(152, 251, 152)",  // Pale green
+    "rgb(34, 139, 34)",    // Forest green
+    "rgb(0, 128, 128)",    // Teal
+    "rgb(72, 209, 204)",   // Turquoise
+    ```
+  </Tab>
+  <Tab title="Row 5: Blues">
+    ```jsx
+    "rgb(30, 144, 255)",   // Dodger blue
+    "rgb(135, 206, 235)",  // Sky blue
+    "rgb(25, 25, 112)",    // Midnight blue
+    "rgb(0, 51, 102)",     // Navy
+    "rgb(25, 25, 112)",    // Midnight blue (duplicate)
+    "rgb(70, 130, 180)",   // Steel blue
+    ```
+  </Tab>
+  <Tab title="Row 6: Purples/Pinks">
+    ```jsx
+    "rgb(75, 0, 130)",     // Indigo
+    "rgb(138, 43, 226)",   // Blue-violet
+    "rgb(186, 85, 211)",   // Medium orchid
+    "rgb(216, 191, 216)",  // Thistle
+    "rgb(255, 192, 203)",  // Pink
+    "rgb(219, 39, 119)",   // Pink-red
+    ```
+  </Tab>
+</Tabs>
+
+### Usage
+
+```jsx
+<ColorPalette
+  selected={colors.torso}
+  onSelect={(c) => setColors((p) => ({ ...p, torso: c }))}
+/>
+```
+
+## TextSection Component
+
+Text input with font selection for team and player names.
+
+### Props
+
+<ParamField path="value" type="string" required>
+  Current text value
+</ParamField>
+
+<ParamField path="onChange" type="(value: string) => void" required>
+  Callback when text changes
+</ParamField>
+
+<ParamField path="placeholder" type="string" default='Escribe aquí...'>
+  Input placeholder text
+</ParamField>
+
+<ParamField path="selected" type="boolean">
+  Whether this text field is currently focused
+</ParamField>
+
+<ParamField path="onFocus" type="() => void">
+  Callback when input receives focus
+</ParamField>
+
+<ParamField path="selectedFont" type="string">
+  Currently selected font name
+</ParamField>
+
+<ParamField path="onFontSelect" type="(font: string) => void">
+  Callback when font is selected
+</ParamField>
+
+### Available Fonts
+
+- **INTER** - Modern sans-serif
+- **ACTOR** - Display font
+- **MONTSSERRAT** - Geometric sans-serif (note: typo in original code)
+- **JOMHURIA** - Decorative font
+
+### Usage
+
+```jsx
+<TextSection
+  value={teamName}
+  onChange={setTeamName}
+  placeholder="Equipo..."
+  selected={selectedField === 'team'}
+  onFocus={() => setSelectedField('team')}
+  selectedFont={teamFont}
+  onFontSelect={setTeamFont}
+/>
+```
+
+## PlayersSection Component
+
+Manages player roster with add, remove, and edit capabilities.
+
+### Props
+
+<ParamField path="players" type="Player[]" required>
+  Array of player objects
+</ParamField>
+
+<ParamField path="setPlayers" type="(players: Player[]) => void" required>
+  State setter function from parent
+</ParamField>
+
+### Internal Functions
+
+#### handleAdd
+
+Creates new player with empty fields:
+
+```jsx
+const handleAdd = () => {
+  const newPlayer = {
+    id: Date.now(),
+    name: "",
+    gender: "",
+    jersey: "",
+    number: "",
+    quantity: 1,
+  };
+  setPlayers([...players, newPlayer]);
+};
+```
+
+#### handleRemove
+
+Filters out player by ID:
+
+```jsx
+const handleRemove = (id) => {
+  setPlayers(players.filter((p) => p.id !== id));
+};
+```
+
+#### handleChange
+
+Updates single field for specific player:
+
+```jsx
+const handleChange = (id, field, value) => {
+  setPlayers(
+    players.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+  );
+};
+```
+
+### UI Features
+
+- **Eye icon button**: Preview player's uniform (currently non-functional)
+- **Gender dropdown**: H (Hombre), M (Mujer), Ñ (Niño)
+- **Jersey size dropdown**: S, M, L
+- **Number input**: Jersey number
+- **Quantity input**: Number of jerseys to order
+- **Delete button**: Red X button to remove player
+- **Selection highlight**: Purple ring when player is clicked
+
+<Warning>
+**Event Propagation**: The component uses `e.stopPropagation()` to prevent row selection when interacting with inputs.
+</Warning>
+
+## Styling Classes
+
+### Custom Tailwind Classes
+
+<ParamField path="bg-personalizado" type="class">
+  Primary brand background color
+</ParamField>
+
+<ParamField path="bg-personalizado-click" type="class">
+  Background for clickable elements
+</ParamField>
+
+<ParamField path="bg-personalizado-click-hover" type="class">
+  Hover state for interactive elements
+</ParamField>
+
+### Custom Fonts
+
+<ParamField path="Montserrat1" type="font">
+  Used for buttons and labels
+</ParamField>
+
+<ParamField path="Arboria" type="font">
+  Used for section headers
+</ParamField>
+
+## Usage Example
+
+```jsx
+import Sidebar from './components/Sidebar';
+
+function PersonalizarPage() {
+  return (
+    <div className="flex">
+      <Sidebar />
+      <main className="flex-1">
+        {/* 3D viewer and other content */}
+      </main>
+    </div>
+  );
+}
+```
+
+## Accessibility
+
+- Uses semantic HTML (`<aside>`, `<nav>`, `<section>`, `<header>`)
+- Includes `aria-label` on main container
+- Implements `aria-expanded` and `aria-controls` for collapsible sections
+- Provides `title` attributes for tooltips
+- Keyboard accessible (button elements, native inputs)
+
+## Performance Considerations
+
+<Note>
+**Re-render Optimization**: Consider memoizing sub-components with `React.memo()` to prevent unnecessary re-renders when color palette or player list changes.
+</Note>
+
+## Integration Points
+
+### Router Integration
+
+```jsx
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+
+const navigate = useNavigate();
+const { modelo } = useParams();  // From route: /personalizar/:modelo
+const { state: locationState } = useLocation();  // Receives design data
+```
+
+### Logo Upload Flow
+
+```jsx
+function LogoUploadLink({ onLogoSelect }) {
+  const navigate = useNavigate();
+  const handleOpenLogoWindow = () => {
+    navigate("/agregar-logo");
+  };
+  // ...
+}
+```
+
+<Warning>
+**Incomplete Implementation**: The `onLogoSelect` prop is passed but never called. Logo upload completion requires navigation state management.
+</Warning>

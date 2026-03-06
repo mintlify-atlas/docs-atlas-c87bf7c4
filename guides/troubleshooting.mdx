@@ -1,0 +1,1029 @@
+---
+title: "Troubleshooting Guide"
+description: "Solutions to common issues when designing and ordering custom esports uniforms"
+---
+
+## Overview
+
+This guide helps you resolve common issues encountered during the uniform customization process on the Dark Lion platform. Issues are organized by workflow stage for easy navigation.
+
+<Note>
+Most issues can be resolved by refreshing the page or clearing your browser cache. Always try these first.
+</Note>
+
+## Design Interface Issues
+
+<AccordionGroup>
+  <Accordion title="Sidebar sections won't expand or collapse">
+    **Symptoms:**
+    - Clicking section headers does nothing
+    - Chevron icon doesn't rotate
+    - Content remains visible or hidden
+    
+    **Possible Causes:**
+    - JavaScript not fully loaded
+    - Browser compatibility issue
+    - Conflicting browser extension
+    
+    **Solutions:**
+    
+    1. **Refresh the page:**
+       - Press `Ctrl + R` (Windows/Linux) or `Cmd + R` (Mac)
+       - Or click the refresh button in your browser
+    
+    2. **Check browser compatibility:**
+       - Use modern browsers: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+       - Update your browser to the latest version
+    
+    3. **Disable browser extensions:**
+       - Ad blockers may interfere with React functionality
+       - Try incognito/private browsing mode
+    
+    4. **Clear cache and cookies:**
+       ```
+       Chrome: Settings → Privacy and security → Clear browsing data
+       Firefox: Options → Privacy & Security → Clear Data
+       Safari: Preferences → Privacy → Manage Website Data
+       ```
+    
+    <Tip>
+    If sections remain stuck, you can still scroll through the sidebar to access all options even if collapsed.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Selected colors not showing on uniform preview">
+    **Symptoms:**
+    - Color picker shows selection (purple ring)
+    - 3D viewer doesn't update
+    - Colors appear as default white/gray
+    
+    **Possible Causes:**
+    - Preview component not receiving state updates
+    - 3D model loading issue
+    - State management synchronization delay
+    
+    **Solutions:**
+    
+    1. **Wait a moment:**
+       - Some color updates may take 1-2 seconds to render
+       - Watch for loading indicators
+    
+    2. **Click color again:**
+       - Deselect by clicking another section
+       - Re-select your desired color
+    
+    3. **Check all four sections:**
+       - Body (Cuerpo)
+       - Back (Espalda)
+       - Sleeves (Mangas)
+       - Collar (Cuello)
+       - Ensure each has a color selected
+    
+    4. **Navigate away and back:**
+       - Click "Guardar Uniforme" to save state
+       - Click "Editar Uniforme" to return with saved data
+    
+    <Warning>
+    If the 3D viewer appears completely blank or shows error, try refreshing the page. Your selections should persist if you've saved.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Cannot select fabric type">
+    **Symptoms:**
+    - Clicking fabric buttons has no effect
+    - No button highlights when clicked
+    - Selected fabric doesn't save
+    
+    **Possible Causes:**
+    - onClick handler not attached
+    - State not updating
+    - Re-render issue
+    
+    **Solutions:**
+    
+    1. **Verify section is expanded:**
+       - Look for "Tipos de Tela" section at top
+       - Ensure chevron points up (section open)
+    
+    2. **Try each option:**
+       - Click Microfibra
+       - Click Poliester  
+       - Click Nylon
+       - Click Dry-Fit
+       - One should show darker background
+    
+    3. **Check for visual feedback:**
+       - Selected option: `bg-personalizado-click-hover`
+       - Unselected: `bg-personalizado-click`
+       - Hover effect should be visible
+    
+    4. **Refresh and retry:**
+       - Hard refresh: `Ctrl + Shift + R`
+       - Clear state by returning to home page
+       - Start customization again
+  </Accordion>
+
+  <Accordion title="Design templates not loading or displaying">
+    **Symptoms:**
+    - Broken image icons in "Diseños" section
+    - Empty boxes instead of shirt designs
+    - Cannot click to select
+    
+    **Possible Causes:**
+    - Image files not loading from server
+    - Path issues: `/shirt1.png`, `/shirt2.png`
+    - Network connectivity problem
+    
+    **Solutions:**
+    
+    1. **Check internet connection:**
+       - Verify you're connected to internet
+       - Try loading other websites
+       - Check for firewall/proxy blocks
+    
+    2. **Wait for images to load:**
+       - Images may be loading slowly
+       - Look for loading spinners
+       - Wait 10-15 seconds
+    
+    3. **Check browser console:**
+       - Press F12 to open Developer Tools
+       - Click "Console" tab
+       - Look for 404 errors on image files
+       - Report specific errors to support
+    
+    4. **Try different design approach:**
+       - You can proceed without design template
+       - Custom colors will still apply
+       - Logo and text will display normally
+    
+    <Note>
+    Design templates are optional - the main customization is through colors, text, and logos.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Text input fields not accepting keyboard input">
+    **Symptoms:**
+    - Cannot type in "Nombre del Equipo" or "Nombre del Jugador"
+    - Cursor doesn't appear in text fields
+    - Keyboard input goes nowhere
+    
+    **Possible Causes:**
+    - Input field not focused
+    - Event handler issue
+    - Browser input blocking
+    
+    **Solutions:**
+    
+    1. **Click directly in the input field:**
+       - Click the underlined area, not the label
+       - Look for cursor blinking
+       - Purple focus border should appear
+    
+    2. **Check field focus:**
+       - Selected field should show `ring-2 ring-purple-500`
+       - Input border changes to purple
+       - Placeholder text should be visible
+    
+    3. **Test with simple input:**
+       - Type single characters: a, b, c
+       - If nothing appears, refresh page
+       - Try using different keyboard
+    
+    4. **Clear any auto-fill:**
+       - Browser auto-fill may conflict
+       - Disable auto-complete in browser settings
+       - Use incognito mode to test
+  </Accordion>
+
+  <Accordion title="Font selection buttons not responding">
+    **Symptoms:**
+    - Cannot select INTER, ACTOR, MONTSSERRAT, or JOMHURIA
+    - No visual change when clicking fonts
+    - Font doesn't apply to preview
+    
+    **Solutions:**
+    
+    1. **Ensure text is entered first:**
+       - Font selection only works if text field has content
+       - Type team/player name first
+       - Then select font
+    
+    2. **Click correct font buttons:**
+       - Fonts are in 2-column grid below text input
+       - Each button should display in its own font
+       - Selected font: `bg-personalizado-click-hover`
+    
+    3. **Verify separate selections:**
+       - Team name has independent font selector
+       - Player name has separate font selector
+       - Each can be different fonts
+    
+    4. **Check which field is active:**
+       - Font applies to currently focused text field
+       - Click team name input, then select font
+       - Click player name input, then select font
+  </Accordion>
+</AccordionGroup>
+
+## Logo Upload Issues
+
+<AccordionGroup>
+  <Accordion title="Upload button doesn't open file selector">
+    **Symptoms:**
+    - Clicking "UPLOAD" button has no effect
+    - No file browser appears
+    - Navigation doesn't happen
+    
+    **Possible Causes:**
+    - Navigation blocked
+    - Route not configured
+    - Browser popup blocker
+    
+    **Solutions:**
+    
+    1. **Check URL navigation:**
+       - Button should navigate to `/agregar-logo`
+       - Watch address bar for URL change
+       - If URL doesn't change, routing issue exists
+    
+    2. **Allow popups:**
+       - Check browser popup blocker settings
+       - Allow popups for this domain
+       - Click shield/lock icon in address bar
+    
+    3. **Try direct navigation:**
+       - Manually type `/agregar-logo` after domain
+       - Bookmark logo upload page for future use
+    
+    4. **Alternative approach:**
+       - Prepare logo URL beforehand
+       - Contact support to add logo manually
+       - Use publicly hosted image URL if available
+  </Accordion>
+
+  <Accordion title="Logo file won't upload or times out">
+    **Symptoms:**
+    - Upload progress bar stalls
+    - "Upload failed" error message
+    - Long wait with no completion
+    
+    **Possible Causes:**
+    - File too large (over 5MB)
+    - Unsupported file format
+    - Network timeout
+    - Server storage issue
+    
+    **Solutions:**
+    
+    1. **Compress your logo:**
+       - Use online tools: TinyPNG, Compressor.io
+       - Reduce dimensions to 1000x1000 pixels max
+       - Target file size: 500KB - 2MB
+    
+    2. **Convert file format:**
+       - Use PNG format (preferred)
+       - Convert from PSD, AI, EPS to PNG
+       - Remove transparency if causing issues
+       - Save as RGB color mode (not CMYK)
+    
+    3. **Check file name:**
+       - Remove special characters: @, #, $, %
+       - Use only letters, numbers, dash, underscore
+       - Keep filename under 50 characters
+       - Example: `team-logo-2024.png`
+    
+    4. **Test network stability:**
+       - Use wired connection instead of WiFi
+       - Try different network if available
+       - Upload during off-peak hours
+    
+    <Tip>
+    If upload repeatedly fails, host your logo on Imgur or Google Drive and provide the URL to support.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Uploaded logo doesn't display in preview">
+    **Symptoms:**
+    - Upload succeeds but logo section shows "—"
+    - Logo URL exists but image doesn't render
+    - Broken image icon appears
+    
+    **Solutions:**
+    
+    1. **Verify logo URL:**
+       - Check that logoUrl is saved in design state
+       - URL should be complete with http:// or https://
+       - Test URL directly in browser address bar
+    
+    2. **Check image hosting:**
+       - Ensure hosted image is publicly accessible
+       - Not behind login/paywall
+       - CORS headers allow external access
+    
+    3. **Return to review page:**
+       - Save your design
+       - Navigate to review page
+       - Logo should appear as 12x12 thumbnail
+    
+    4. **Re-upload if needed:**
+       - Delete current logo selection
+       - Upload same file again
+       - Verify success confirmation
+  </Accordion>
+</AccordionGroup>
+
+## Player Management Issues
+
+<AccordionGroup>
+  <Accordion title="Cannot add new players with + button">
+    **Symptoms:**
+    - Green + button doesn't respond
+    - No new player form appears
+    - Players array doesn't grow
+    
+    **Solutions:**
+    
+    1. **Scroll to bottom of sidebar:**
+       - + button is at bottom of "Agregar Jugadores" section
+       - May need to scroll within sidebar
+       - Look for green button in bottom-right
+    
+    2. **Check player limit:**
+       - While no hard limit exists, browser may slow with 50+ players
+       - Consider splitting large teams into multiple orders
+    
+    3. **Verify JavaScript enabled:**
+       - Player management requires JavaScript
+       - Check browser settings
+       - Ensure no script blockers active
+    
+    4. **Refresh and try again:**
+       - Save current progress first
+       - Refresh page
+       - Re-add players
+  </Accordion>
+
+  <Accordion title="Player information not saving">
+    **Symptoms:**
+    - Enter player details but they disappear
+    - Data resets to default values
+    - Changes don't persist
+    
+    **Possible Causes:**
+    - Not clicking "Guardar Uniforme"
+    - Browser back button clearing state
+    - Session timeout
+    
+    **Solutions:**
+    
+    1. **Always save before navigating:**
+       - Click "Guardar Uniforme" button at sidebar bottom
+       - Wait for navigation to complete
+       - Don't use browser back button
+    
+    2. **Save incrementally:**
+       - Add 3-5 players
+       - Save design
+       - Return to edit if needed
+       - Add more players
+    
+    3. **Check state persistence:**
+       - Data saves in React Router location state
+       - Using back button may clear this
+       - Always use "Editar Uniforme" button
+    
+    4. **Keep backup list:**
+       - Maintain player roster in separate document
+       - Copy/paste names for efficiency
+       - Reduces re-entry if data lost
+    
+    <Warning>
+    Player data is not saved to browser localStorage. Always click "Guardar Uniforme" before leaving the page.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Dropdown menus (Gender/Jersey) stuck or won't open">
+    **Symptoms:**
+    - Cannot select H/M/Ñ for gender
+    - Jersey size dropdown doesn't expand
+    - Clicks register but no options appear
+    
+    **Solutions:**
+    
+    1. **Click directly on dropdown:**
+       - Click the select element, not the label
+       - Look for dropdown arrow indicator
+       - Should show native browser dropdown
+    
+    2. **Use keyboard navigation:**
+       - Tab to focus the select element
+       - Press Space or Enter to open
+       - Use arrow keys to select
+       - Press Enter to confirm
+    
+    3. **Check browser zoom:**
+       - Reset zoom to 100%: `Ctrl + 0`
+       - High zoom levels may hide dropdown
+    
+    4. **Try different input method:**
+       - Click once and wait
+       - Try double-click
+       - Right-click may show context menu
+  </Accordion>
+
+  <Accordion title="Cannot delete player with X button">
+    **Symptoms:**
+    - Red X button doesn't remove player
+    - Player card remains visible
+    - Delete action has no effect
+    
+    **Solutions:**
+    
+    1. **Click directly on X:**
+       - X button is in top-right of player row
+       - Red background with white X
+       - Click center of button
+    
+    2. **Stop event propagation:**
+       - The button uses `e.stopPropagation()`
+       - Click precisely on X, not near it
+       - Avoid clicking player card itself
+    
+    3. **Verify player removal:**
+       - Check that players array updates
+       - Removed player should disappear immediately
+       - IDs are filtered out of array
+    
+    4. **Last resort - manual:**
+       - Clear all player data
+       - Start fresh with + button
+       - Re-add only needed players
+  </Accordion>
+
+  <Accordion title="Player preview (eye icon) not working">
+    **Symptoms:**
+    - Click eye icon but nothing happens
+    - No preview of player's specific uniform
+    - Icon appears but is non-functional
+    
+    **Current Status:**
+    
+    <Note>
+    The eye icon preview feature is currently for visual design. Individual player preview functionality is in development.
+    </Note>
+    
+    **Workaround:**
+    - All players use the same base design
+    - Only name and number differ per player
+    - Preview main uniform design in 3D viewer
+    - Final variations shown after production
+  </Accordion>
+</AccordionGroup>
+
+## Save and Navigation Issues
+
+<AccordionGroup>
+  <Accordion title="Guardar Uniforme button doesn't respond">
+    **Symptoms:**
+    - Click save button but nothing happens
+    - No navigation to review page
+    - No visual feedback
+    
+    **Solutions:**
+    
+    1. **Check for required fields:**
+       - While no validation blocks save, ensure basic data entered
+       - At minimum: fabric type, one color
+    
+    2. **Look for error messages:**
+       - Check browser console (F12)
+       - Look for red error text
+       - Note specific error messages
+    
+    3. **Verify button styling:**
+       - Button should have hover scale effect
+       - Purple gradient background
+       - Text: "Guardar Uniforme"
+    
+    4. **Try keyboard shortcut:**
+       - Tab until button is focused
+       - Press Enter or Space
+    
+    5. **Manual navigation:**
+       - Type `/datos-seleccionados` in address bar
+       - Note: Will lose unsaved data
+  </Accordion>
+
+  <Accordion title="Lost design data when navigating back">
+    **Symptoms:**
+    - Used browser back button
+    - All design choices disappeared
+    - Starting from blank slate
+    
+    **Why This Happens:**
+    
+    Data is passed via React Router state, which is cleared by browser back button.
+    
+    **Prevention:**
+    
+    <Warning>
+    NEVER use browser back button. Always use in-app navigation:
+    - "Editar Uniforme" to return to customization
+    - Home logo to start over
+    - "Guardar Uniforme" to save progress
+    </Warning>
+    
+    **Recovery:**
+    
+    Unfortunately, if you used the back button before saving, data cannot be recovered. You must:
+    1. Return to home page
+    2. Select shirt style again
+    3. Re-enter all customization choices
+    
+    **Future Prevention:**
+    - Save frequently using "Guardar Uniforme"
+    - Keep notes of color RGB values
+    - Take screenshots of your design
+  </Accordion>
+
+  <Accordion title="Editar Uniforme returns to wrong design">
+    **Symptoms:**
+    - Click edit but see different colors/design
+    - Some fields missing or incorrect
+    - Not showing latest changes
+    
+    **Solutions:**
+    
+    1. **Verify you saved latest:**
+       - Did you click "Guardar Uniforme" after last change?
+       - Unsaved changes won't persist
+    
+    2. **Check browser session:**
+       - Refresh may have cleared state
+       - Multiple tabs may have conflicting states
+       - Close all tabs and start fresh
+    
+    3. **Review what's loaded:**
+       - Check locationState in React DevTools
+       - Verify design object has expected values
+       - Look for null/undefined values
+    
+    4. **Start over if needed:**
+       - If data is corrupted, return to home
+       - Select shirt model again
+       - Re-enter design (have RGB values ready)
+  </Accordion>
+</AccordionGroup>
+
+## Review Page Issues
+
+<AccordionGroup>
+  <Accordion title="Review page shows missing or incorrect data">
+    **Symptoms:**
+    - Some fields show "—" instead of data
+    - Colors don't match what was selected
+    - Player list is incomplete
+    
+    **Solutions:**
+    
+    1. **Check data presence:**
+       - "—" indicates that field is empty/null
+       - Common for optional fields like logo
+       - Review sidebar shows all saved state
+    
+    2. **Verify each section:**
+       ```
+       Design object should contain:
+       - fabricType: string
+       - design: string (URL)
+       - colors: { torso, back, sleeves, collar }
+       - teamName: string
+       - playerName: string
+       - logoUrl: string
+       - teamFont: string
+       - playerFont: string
+       ```
+    
+    3. **Click Editar Uniforme:**
+       - Returns to customization with current state
+       - Fill in any missing fields
+       - Save again
+    
+    4. **Check players array:**
+       - Should have at least default player
+       - Each player needs: id, name, gender, jersey, number, quantity
+  </Accordion>
+
+  <Accordion title="Uniform preview images not loading">
+    **Symptoms:**
+    - Large center image shows broken icon
+    - Bottom thumbnails don't display
+    - All showing placeholder 'frente' asset
+    
+    **Current Implementation:**
+    
+    <Note>
+    Review page currently uses static 'frente.jpeg' asset from `/assets/agregar-logo/` directory. Dynamic rendering of custom designs is in development.
+    </Note>
+    
+    **Solutions:**
+    
+    1. **Check image path:**
+       - Verify frente.jpeg exists in assets
+       - Path: `../assets/agregar-logo/frente.jpeg`
+    
+    2. **Placeholder is normal:**
+       - Static images are expected behavior
+       - Your actual design renders during production
+       - Trust the sidebar data summary
+    
+    3. **Verify on order submission:**
+       - Final design sent to API includes all parameters
+       - Production team receives full specification
+  </Accordion>
+
+  <Accordion title="Color swatches not displaying correctly">
+    **Symptoms:**
+    - Color boxes are white or transparent
+    - RGB values not applying to swatch style
+    - Missing color indicators
+    
+    **Solutions:**
+    
+    1. **Verify color format:**
+       - Colors should be RGB strings: `"rgb(255, 255, 255)"`
+       - Not hex codes or color names
+       - Check design.colors object structure
+    
+    2. **Check inline styles:**
+       ```jsx
+       style={{ backgroundColor: design.colors.torso }}
+       ```
+       Should render valid CSS
+    
+    3. **Inspect rendered HTML:**
+       - Right-click color swatch
+       - Inspect element
+       - Check computed styles for background-color
+    
+    4. **Return to edit if incorrect:**
+       - Use "Editar Uniforme" button
+       - Re-select colors from palette
+       - Save and review again
+  </Accordion>
+</AccordionGroup>
+
+## Submission and Contact Form Issues
+
+<AccordionGroup>
+  <Accordion title="Contact form validation errors">
+    **Symptoms:**
+    - Red error text appears below fields
+    - Cannot submit form
+    - Field-specific error messages
+    
+    **Common Errors and Fixes:**
+    
+    **"El nombre es obligatorio"**
+    - Enter any text in Nombre field
+    - Minimum 3 characters required
+    
+    **"El nombre debe tener al menos 3 caracteres"**
+    - Current name too short
+    - Enter full name, not initials
+    
+    **"El teléfono es obligatorio"**
+    - Phone field is empty
+    - Enter 10-digit phone number
+    
+    **"El teléfono debe contener exactamente 10 dígitos"**
+    - Phone must be exactly 10 digits
+    - Remove country codes, extensions
+    - Format: 5551234567 (no dashes/spaces)
+    
+    **"El correo es obligatorio"**
+    - Email field is empty
+    - Enter valid email address
+    
+    **"Ingresa un correo válido"**
+    - Email format invalid
+    - Must contain @ and domain
+    - Example: team@example.com
+    
+    <Tip>
+    Error messages clear as you type. Fix the error and the message disappears immediately.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Enviar Uniforme button disabled or unresponsive">
+    **Symptoms:**
+    - Submit button appears but doesn't work
+    - Sending state stuck on loading
+    - No API request sent
+    
+    **Solutions:**
+    
+    1. **Wait for validation:**
+       - validateContactData() must pass
+       - Fix all field errors first
+       - All fields required
+    
+    2. **Check sending state:**
+       - Button disabled while `sending === true`
+       - Wait for previous request to complete
+       - Typical submission: 2-5 seconds
+    
+    3. **Verify network connection:**
+       - API endpoint: `https://api-darklion.onrender.com`
+       - Must have internet connection
+       - Check for network errors in console
+    
+    4. **Try again after timeout:**
+       - If stuck loading, refresh page
+       - Return to review page
+       - Click "Enviar Uniforme" again
+       - Re-enter contact information
+  </Accordion>
+
+  <Accordion title="API submission fails with error">
+    **Symptoms:**
+    - Error alert appears
+    - Console shows network error or status code
+    - Error message: "Error al enviar: ..."
+    
+    **Common API Errors:**
+    
+    **Status 400 - Bad Request**
+    - Invalid payload data
+    - Missing required fields
+    - Check that all players have required info
+    
+    **Status 500 - Server Error**
+    - Backend processing error
+    - Try again in a few minutes
+    - Contact support if persists
+    
+    **Network Error / Timeout**
+    - Connection to API failed
+    - Check internet stability
+    - VPN may block connection
+    - Firewall may interfere
+    
+    **CORS Error**
+    - Browser blocking request
+    - Usually resolves on retry
+    - Try different browser
+    
+    **Solutions:**
+    
+    1. **Verify payload:**
+       - Check browser console for payload object
+       - Ensure tallas array is populated
+       - Listado array should have player objects
+    
+    2. **Retry submission:**
+       - Wait 30 seconds
+       - Click submit again
+       - May be temporary server issue
+    
+    3. **Contact support:**
+       - Provide error message
+       - Include screenshot
+       - Note time of submission attempt
+    
+    <Warning>
+    If submission repeatedly fails, take screenshots of your design summary and contact support to place order manually.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Successful submission but no confirmation">
+    **Symptoms:**
+    - Form submits without error
+    - No alert confirmation appears
+    - Unsure if order was received
+    
+    **Verification Steps:**
+    
+    1. **Check for alert:**
+       - Success shows: "Uniforme enviado con éxito!"
+       - Browser may block alerts
+       - Allow alerts for this site
+    
+    2. **Check email:**
+       - Confirmation email should arrive
+       - Check spam/junk folder
+       - May take 5-10 minutes
+    
+    3. **Review contact form state:**
+       - After success, form fields reset to empty
+       - Form returns to hidden state
+       - Back to review page view
+    
+    4. **Verify in browser network tab:**
+       - F12 → Network tab
+       - Look for POST to `/api/designs/client-and-design`
+       - Status 200 = success
+    
+    5. **If in doubt, contact support:**
+       - Provide email used
+       - They can verify order receipt
+  </Accordion>
+</AccordionGroup>
+
+## Performance Issues
+
+<AccordionGroup>
+  <Accordion title="Slow loading or lag when interacting">
+    **Symptoms:**
+    - Clicks delayed by 1-2 seconds
+    - Sidebar scrolling is choppy
+    - 3D viewer framerate low
+    
+    **Solutions:**
+    
+    1. **Close unnecessary browser tabs:**
+       - Each tab uses memory
+       - Close other tabs to free resources
+    
+    2. **Clear browser cache:**
+       - Old cached files may slow loading
+       - Clear cache and hard refresh
+    
+    3. **Reduce player count:**
+       - Large player arrays (30+) can slow interface
+       - Split into multiple smaller orders
+    
+    4. **Update graphics drivers:**
+       - 3D viewer uses WebGL
+       - Outdated drivers cause slowness
+       - Update GPU drivers
+    
+    5. **Try different browser:**
+       - Chrome typically fastest for React apps
+       - Firefox also performs well
+       - Avoid very old browsers
+  </Accordion>
+
+  <Accordion title="3D viewer not rendering or showing blank">
+    **Symptoms:**
+    - Center area is empty/white
+    - No shirt model visible
+    - ShirtViewer3D component broken
+    
+    **Solutions:**
+    
+    1. **Check WebGL support:**
+       - Visit: https://get.webgl.org/
+       - Should show spinning cube
+       - If not, WebGL is disabled or unsupported
+    
+    2. **Enable hardware acceleration:**
+       ```
+       Chrome: Settings → System → Use hardware acceleration
+       Firefox: Options → Performance → Use hardware acceleration
+       ```
+    
+    3. **Update browser:**
+       - WebGL requires modern browser
+       - Update to latest version
+    
+    4. **Check GPU compatibility:**
+       - Very old GPUs may not support WebGL 2.0
+       - Integrated graphics usually fine
+    
+    5. **Fallback approach:**
+       - 3D viewer is enhancement, not required
+       - Continue customization using sidebar options
+       - Preview will be available at review stage
+  </Accordion>
+</AccordionGroup>
+
+## Browser-Specific Issues
+
+<AccordionGroup>
+  <Accordion title="Safari-specific issues">
+    **Known Issues:**
+    - Dropdown menus may render differently
+    - Some hover effects less smooth
+    - WebGL performance may be lower
+    
+    **Safari Solutions:**
+    1. Update to Safari 14 or later
+    2. Enable "Develop" menu → Enable experimental features
+    3. Clear Safari cache regularly
+    4. Consider Chrome or Firefox for best experience
+  </Accordion>
+
+  <Accordion title="Firefox-specific issues">
+    **Known Issues:**
+    - Color rendering may differ slightly from Chrome
+    - 3D viewer frame rate may be lower
+    
+    **Firefox Solutions:**
+    1. Update to Firefox 88 or later
+    2. about:config → webgl.force-enabled = true
+    3. Disable Firefox's Enhanced Tracking Protection for this site
+    4. Clear cache and cookies
+  </Accordion>
+
+  <Accordion title="Mobile browser limitations">
+    **Current Status:**
+    
+    <Warning>
+    The platform is optimized for desktop use. Mobile browsers may have limited functionality.
+    </Warning>
+    
+    **Mobile Issues:**
+    - Sidebar may be difficult to scroll
+    - Color picker buttons very small
+    - 3D viewer may not load
+    - Form inputs may be cramped
+    
+    **Recommendations:**
+    - Use desktop computer for best experience
+    - If mobile only, use landscape orientation
+    - Increase browser zoom for easier tapping
+    - Tablet (iPad, etc.) works better than phone
+  </Accordion>
+</AccordionGroup>
+
+## Getting Additional Help
+
+### When to Contact Support
+
+Contact Dark Lion support if:
+- Issue persists after trying all solutions
+- Receiving error codes not listed here
+- Lost data cannot be recovered
+- Payment or order processing questions
+- Production timeline inquiries
+
+### Information to Provide
+
+<Note>
+When contacting support, include:
+- Description of issue
+- Steps to reproduce
+- Browser and OS version
+- Screenshots of errors
+- Time/date of occurrence
+- Any console error messages (F12)
+</Note>
+
+### Before Contacting Support
+
+<Steps>
+  <Step title="Try basic troubleshooting">
+    - Refresh page
+    - Clear cache
+    - Try different browser
+    - Check internet connection
+  </Step>
+  
+  <Step title="Document the issue">
+    - Take screenshots
+    - Note exact error messages
+    - Record steps that cause issue
+  </Step>
+  
+  <Step title="Save your work">
+    - Screenshot your design summary
+    - Write down color RGB values
+    - Save player list externally
+  </Step>
+  
+  <Step title="Check this guide">
+    - Review relevant section
+    - Try suggested solutions
+    - Note what didn't work
+  </Step>
+</Steps>
+
+## Quick Reference
+
+### Most Common Issues and Quick Fixes
+
+| Issue | Quick Fix |
+|-------|----------|
+| Section won't expand | Refresh page (Ctrl+R) |
+| Colors not applying | Wait 2 seconds, click again |
+| Lost data after back button | Never use back button - use in-app navigation |
+| Cannot type in fields | Click directly in input area, look for cursor |
+| Upload fails | Reduce file size under 2MB |
+| Validation errors | Check each field meets requirements |
+| Slow performance | Close other tabs, clear cache |
+| 3D viewer blank | Enable hardware acceleration |
+| Player won't delete | Click precisely on red X button |
+| Save button not working | Hard refresh and retry |
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Design Workflow" icon="route" href="/guides/design-workflow">
+    Complete step-by-step customization guide
+  </Card>
+  <Card title="Best Practices" icon="star" href="/guides/best-practices">
+    Tips for creating professional designs
+  </Card>
+</CardGroup>

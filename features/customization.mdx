@@ -1,0 +1,293 @@
+---
+title: 'Uniform Customization'
+description: 'Complete guide to designing custom esports uniforms with our interactive customization tool'
+icon: 'palette'
+---
+
+## Overview
+
+The Dark Lion customization engine provides a comprehensive design system that allows teams to create fully personalized esports uniforms. Users can customize every aspect of their uniform, from fabric type to individual player details, all within an intuitive sidebar interface.
+
+<Note>
+  All customization happens in real-time with the 3D viewer updating as you make changes. Your design is automatically saved when you click "Guardar Uniforme".
+</Note>
+
+## Customization Interface
+
+The customization page (`src/pages/Customize.jsx`) consists of two main components:
+
+- **Sidebar Panel**: Contains all customization controls
+- **3D Viewer**: Real-time preview of your uniform design
+
+### Supported Uniform Types
+
+Four collar styles are available:
+
+<CardGroup cols={2}>
+  <Card title="Cuello V" icon="v">
+    V-neck style uniform
+  </Card>
+  <Card title="Cuello Redondo" icon="circle">
+    Round neck style uniform
+  </Card>
+  <Card title="Camisola" icon="shirt">
+    Tank top style uniform
+  </Card>
+  <Card title="Cuello Tank Top" icon="vest">
+    Sleeveless tank top uniform
+  </Card>
+</CardGroup>
+
+## Customization Options
+
+### 1. Fabric Type Selection
+
+Choose from four professional-grade fabric types:
+
+<Tabs>
+  <Tab title="Microfibra">
+    Lightweight and breathable microfiber fabric. Ideal for high-intensity gaming sessions.
+    
+    **Code Reference**: `src/components/Sidebar.jsx:77-84`
+  </Tab>
+  <Tab title="Poliester">
+    Durable polyester material with excellent color retention.
+  </Tab>
+  <Tab title="Nylon">
+    Strong and elastic nylon fabric for maximum comfort.
+  </Tab>
+  <Tab title="Dry-Fit">
+    Moisture-wicking technology keeps players cool and dry.
+  </Tab>
+</Tabs>
+
+### 2. Design Templates
+
+Select from pre-designed templates that serve as the base for your uniform:
+
+- **Design 1** (`/shirt1.png`): First template option
+- **Design 2** (`/shirt2.png`): Second template option
+
+The selected design is highlighted with a purple ring indicator for visual feedback (`src/components/Sidebar.jsx:88-96`).
+
+### 3. Color Customization
+
+Customize colors for four different uniform areas using a comprehensive 42-color palette:
+
+<AccordionGroup>
+  <Accordion title="Cuerpo (Body)" icon="shirt">
+    Customize the main torso color from a palette of 42 colors arranged in a 6x7 grid.
+    
+    **Available Colors**:
+    - Grays and neutrals (white to black)
+    - Reds and burgundies
+    - Oranges and yellows
+    - Greens and limes
+    - Blues and teals
+    - Purples and pinks
+    
+    **Code Reference**: `src/components/Sidebar.jsx:99-104`
+  </Accordion>
+  
+  <Accordion title="Espalda (Back)" icon="arrow-up">
+    Separate color selection for the back of the uniform.
+    
+    Uses the same color palette as the body with independent selection.
+    
+    **Code Reference**: `src/components/Sidebar.jsx:105-110`
+  </Accordion>
+  
+  <Accordion title="Mangas (Sleeves)" icon="arrows-left-right">
+    Customize sleeve colors independently from body and back.
+    
+    **Code Reference**: `src/components/Sidebar.jsx:112-117`
+  </Accordion>
+  
+  <Accordion title="Cuello (Collar)" icon="circle">
+    Personalize the collar area with any color from the palette.
+    
+    **Code Reference**: `src/components/Sidebar.jsx:119-124`
+  </Accordion>
+</AccordionGroup>
+
+### Color Palette Details
+
+The color palette component (`ColorPalette` at `src/components/Sidebar.jsx:240-311`) provides:
+
+- **42 RGB colors** organized in 6 rows
+- **Visual feedback**: Selected colors show a purple ring
+- **Hover effects**: Colors scale on hover for better UX
+- **Accessibility**: Each color includes a title attribute with RGB value
+
+<Tip>
+  The color palette uses RGB values for precise color matching. Hover over any color to see its exact RGB value.
+</Tip>
+
+### 4. Text Customization
+
+#### Team Name
+
+Add your team name with custom typography:
+
+- **Input field**: Text entry for team name
+- **Font selection**: Choose from 4 font options
+  - INTER
+  - ACTOR
+  - MONTSSERRAT
+  - JOMHURIA
+- **Visual indicator**: Purple ring shows when field is active
+
+**Code Reference**: `src/components/Sidebar.jsx:126-135`
+
+#### Player Name
+
+Separate text field for player names with its own font selection:
+
+- Independent font choice from team name
+- Same 4 font options available
+- Placeholder text: "Jugador..."
+
+**Code Reference**: `src/components/Sidebar.jsx:136-146`
+
+<Note>
+  Font selections are stored separately for team and player names, allowing different typography for each element.
+</Note>
+
+### 5. Logo Upload
+
+Add custom team logos to your uniform:
+
+- **Upload button**: Opens logo upload interface
+- **Navigation**: Routes to `/agregar-logo` page
+- **Visual UI**: Large upload area with icon indicator
+
+**Code Reference**: `src/components/Sidebar.jsx:147-149` and `LogoUploadLink` component at lines 377-410
+
+### 6. Team Management
+
+Add and manage individual players with detailed information:
+
+<Card title="Player Entry Fields" icon="users">
+  Each player entry includes:
+  
+  - **Name**: Full player name input
+  - **Gender (Gen)**: H (Hombre), M (Mujer), Ñ (Niño)
+  - **Jersey Size**: S, M, L options
+  - **Number (Num)**: Player number field
+  - **Quantity (Canti)**: Number of jerseys for this player
+  - **Preview button**: Eye icon for viewing player-specific uniform
+  - **Delete button**: Remove player from roster
+</Card>
+
+**Default Player**: The system starts with one sample player:
+```javascript
+{ id: 1, name: "Arath B.", gender: "H", jersey: "L", number: 21, quantity: 21 }
+```
+
+**Code Reference**: `src/components/Sidebar.jsx:414-554`
+
+#### Player Management Features
+
+- **Add Players**: Green "+" button to add new team members
+- **Remove Players**: Red "✕" button on each player card
+- **Visual Selection**: Purple ring highlights the selected player
+- **Real-time Updates**: All changes are tracked in component state
+
+<Warning>
+  Player data is essential for order processing. Ensure all fields are completed before saving your design.
+</Warning>
+
+## Saving Your Design
+
+The "Guardar Uniforme" button at the bottom of the sidebar saves all customization data:
+
+### Saved Data Structure
+
+When you save, the following information is collected:
+
+```javascript
+{
+  fabricType: "Selected fabric",
+  design: "/shirt1.png or /shirt2.png",
+  colors: {
+    torso: "rgb(...)",
+    back: "rgb(...)",
+    sleeves: "rgb(...)",
+    collar: "rgb(...)"
+  },
+  teamName: "Your team name",
+  playerName: "Player name",
+  logoUrl: "Logo URL",
+  teamFont: "Selected font",
+  playerFont: "Selected font"
+}
+```
+
+**Navigation**: After saving, you're redirected to `/datos-seleccionados` with your design data (`src/components/Sidebar.jsx:53-56`).
+
+### State Persistence
+
+The system supports returning to the customization page:
+
+- **Location State**: Design data is passed via React Router state
+- **Auto-restore**: Previous selections are automatically loaded when returning from the review page
+- **No Data Loss**: All customization work is preserved during navigation
+
+**Code Reference**: `src/components/Sidebar.jsx:35-51`
+
+## UI Components
+
+### Collapsible Sections
+
+All customization categories use collapsible sections for better organization:
+
+- **Header**: Title with icon and chevron indicator
+- **Expand/Collapse**: Click header to toggle visibility
+- **Animation**: Smooth chevron rotation on toggle
+- **State Management**: Each section maintains its own open/closed state
+
+**Code Reference**: `Section` component at `src/components/Sidebar.jsx:170-216`
+
+### Visual Design
+
+The sidebar features a modern glass-morphism design:
+
+- **Backdrop blur effect**: Semi-transparent background
+- **Rounded corners**: 2xl border radius
+- **Shadow effects**: XL shadow for depth
+- **Sticky positioning**: Stays visible during scroll
+- **Overflow handling**: Scrollable content area
+- **Z-index layering**: Proper stacking context
+
+**Code Reference**: `src/components/Sidebar.jsx:59-74`
+
+## Best Practices
+
+<Tip>
+  **Design Workflow**:
+  1. Start with fabric type and design template
+  2. Choose your color scheme for all uniform areas
+  3. Add team and player text with appropriate fonts
+  4. Upload your team logo
+  5. Add all team members with their details
+  6. Save and review your design
+</Tip>
+
+<Note>
+  The customization interface is fully responsive and optimized for desktop use. All changes are tracked in real-time, so you can experiment freely before saving.
+</Note>
+
+## Technical Implementation
+
+The customization system is built with:
+
+- **React Hooks**: `useState` for design state management
+- **React Router**: `useNavigate`, `useParams`, `useLocation` for navigation
+- **Heroicons**: Icon library for visual indicators
+- **Tailwind CSS**: Utility-first styling
+- **Component Architecture**: Modular design with reusable components
+
+**Main Files**:
+- `src/pages/Customize.jsx`: Main customization page
+- `src/components/Sidebar.jsx`: Customization controls
+- `src/components/ShirtViewer3D.jsx`: 3D preview component

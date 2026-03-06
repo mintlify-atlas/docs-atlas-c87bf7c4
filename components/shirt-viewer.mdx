@@ -1,0 +1,476 @@
+---
+title: ShirtViewer3D Component
+description: 3D shirt visualization using React Three Fiber with interactive camera controls and auto-rotation
+---
+
+## Overview
+
+The `ShirtViewer3D` component renders a 3D shirt model using React Three Fiber (R3F), a React renderer for Three.js. It provides an interactive preview with orbit controls and automatic rotation.
+
+**Location:** `src/components/ShirtViewer3D.jsx`
+
+## Component Structure
+
+```jsx
+import React, { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+
+function ShirtModel() {
+  const { scene } = useGLTF("/camisa3D/camiseta.glb");
+  return <primitive object={scene} scale={1.5} />;
+}
+
+export default function ShirtViewer3D() {
+  return (
+    <div className="w-full h-full">
+      <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <Suspense fallback={null}>
+          <ShirtModel />
+        </Suspense>
+        <OrbitControls 
+          autoRotate 
+          autoRotateSpeed={4}
+          enableZoom={true}
+          enablePan={true}
+        />
+      </Canvas>
+    </div>
+  );
+}
+```
+
+## Props
+
+<Note>
+**No Props**: This component is currently self-contained and doesn't accept any props. To customize the shirt appearance dynamically, you would need to add props for colors, textures, or model variations.
+</Note>
+
+## Dependencies
+
+### React Three Fiber
+
+```bash
+npm install @react-three/fiber @react-three/drei three
+```
+
+<ParamField path="@react-three/fiber" type="^9.5.0">
+  React renderer for Three.js
+</ParamField>
+
+<ParamField path="@react-three/drei" type="^10.7.7">
+  Helper components and hooks for R3F
+</ParamField>
+
+<ParamField path="three" type="^0.183.2">
+  Core Three.js library
+</ParamField>
+
+## ShirtModel Component
+
+Internal component that loads and renders the 3D model.
+
+### Implementation
+
+```jsx
+function ShirtModel() {
+  const { scene } = useGLTF("/camisa3D/camiseta.glb");
+  return <primitive object={scene} scale={1.5} />;
+}
+```
+
+### Model Loading
+
+<ParamField path="useGLTF" type="hook">
+  Loads GLB/GLTF 3D models from the public directory
+</ParamField>
+
+<ParamField path="/camisa3D/camiseta.glb" type="path">
+  Expected location: `public/camisa3D/camiseta.glb`
+</ParamField>
+
+<ParamField path="scale" type="number" default="1.5">
+  Uniform scale factor applied to the model
+</ParamField>
+
+### Scene Object
+
+The `scene` object from `useGLTF` contains:
+
+- **Meshes**: Geometry and materials
+- **Textures**: UV-mapped images
+- **Materials**: Colors, lighting properties
+- **Hierarchy**: Parent-child relationships
+
+## Canvas Configuration
+
+The R3F `Canvas` component is the root 3D scene container.
+
+### Camera Settings
+
+<ParamField path="camera.position" type="[x, y, z]" default="[0, 0, 3]">
+  Initial camera position in 3D space. The camera starts 3 units away from the origin on the Z-axis.
+</ParamField>
+
+<ParamField path="camera.fov" type="number" default="50">
+  Field of view in degrees. Smaller values create a more zoomed-in, telephoto effect.
+</ParamField>
+
+### Usage
+
+```jsx
+<Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+  {/* Scene content */}
+</Canvas>
+```
+
+## Lighting Setup
+
+Two light sources illuminate the shirt model.
+
+### Ambient Light
+
+Provides uniform lighting across all surfaces:
+
+```jsx
+<ambientLight intensity={0.5} />
+```
+
+<ParamField path="intensity" type="number" default="0.5">
+  Light intensity (0-1 range typical). Creates base illumination without shadows.
+</ParamField>
+
+### Directional Light
+
+Simulates sunlight with parallel rays:
+
+```jsx
+<directionalLight position={[10, 10, 5]} intensity={1} />
+```
+
+<ParamField path="position" type="[x, y, z]" default="[10, 10, 5]">
+  Light source position. Positioned above and to the right of the model.
+</ParamField>
+
+<ParamField path="intensity" type="number" default="1">
+  Light intensity. Full brightness for main lighting.
+</ParamField>
+
+<Tabs>
+  <Tab title="Ambient Only">
+    ```jsx
+    <ambientLight intensity={0.8} />
+    // Result: Flat, even lighting, no depth perception
+    ```
+  </Tab>
+  <Tab title="Directional Only">
+    ```jsx
+    <directionalLight position={[10, 10, 5]} intensity={1} />
+    // Result: Strong shadows, high contrast
+    ```
+  </Tab>
+  <Tab title="Combined (Current)">
+    ```jsx
+    <ambientLight intensity={0.5} />
+    <directionalLight position={[10, 10, 5]} intensity={1} />
+    // Result: Balanced lighting with soft shadows
+    ```
+  </Tab>
+</Tabs>
+
+## OrbitControls
+
+Provides interactive camera controls for user interaction.
+
+### Props
+
+<ParamField path="autoRotate" type="boolean" default="true">
+  Enables automatic rotation of the camera around the model
+</ParamField>
+
+<ParamField path="autoRotateSpeed" type="number" default="4">
+  Rotation speed in units per second. Positive values rotate clockwise.
+</ParamField>
+
+<ParamField path="enableZoom" type="boolean" default="true">
+  Allows mouse wheel or pinch-to-zoom
+</ParamField>
+
+<ParamField path="enablePan" type="boolean" default="true">
+  Allows click-and-drag to pan the camera (middle mouse button)
+</ParamField>
+
+### User Interactions
+
+<CardGroup cols={2}>
+  <Card title="Rotate" icon="arrows-rotate">
+    Left-click and drag to rotate the view around the model
+  </Card>
+  <Card title="Zoom" icon="magnifying-glass">
+    Scroll wheel to zoom in/out
+  </Card>
+  <Card title="Pan" icon="hand">
+    Right-click (or middle-click) and drag to pan the view
+  </Card>
+  <Card title="Auto-Rotate" icon="circle-play">
+    Automatic rotation resumes after 1-2 seconds of inactivity
+  </Card>
+</CardGroup>
+
+### Customization Options
+
+Additional OrbitControls props you can add:
+
+```jsx
+<OrbitControls
+  autoRotate
+  autoRotateSpeed={4}
+  enableZoom={true}
+  enablePan={true}
+  
+  // Additional options:
+  minDistance={2}           // Minimum zoom distance
+  maxDistance={10}          // Maximum zoom distance
+  minPolarAngle={0}         // Minimum vertical rotation
+  maxPolarAngle={Math.PI}   // Maximum vertical rotation
+  dampingFactor={0.05}      // Smooth camera movement
+  enableDamping={true}      // Enable smooth transitions
+/>
+```
+
+## Suspense Boundary
+
+Wraps async model loading with React Suspense.
+
+```jsx
+<Suspense fallback={null}>
+  <ShirtModel />
+</Suspense>
+```
+
+<ParamField path="fallback" type="ReactNode" default="null">
+  Content to display while model is loading. Currently shows nothing.
+</ParamField>
+
+### Recommended Loading State
+
+```jsx
+<Suspense fallback={<LoadingSpinner />}>
+  <ShirtModel />
+</Suspense>
+
+// Or with text:
+<Suspense fallback={
+  <Html center>
+    <div className="text-white">Cargando modelo 3D...</div>
+  </Html>
+}>
+  <ShirtModel />
+</Suspense>
+```
+
+<Warning>
+**No Loading Feedback**: The current implementation shows nothing while loading. Consider adding a loading indicator for better UX.
+</Warning>
+
+## Usage Example
+
+### Basic Integration
+
+```jsx
+import ShirtViewer3D from './components/ShirtViewer3D';
+
+function CustomizePage() {
+  return (
+    <div className="flex">
+      <Sidebar />
+      <main className="flex-1">
+        <div className="w-full h-screen">
+          <ShirtViewer3D />
+        </div>
+      </main>
+    </div>
+  );
+}
+```
+
+### With Container Sizing
+
+```jsx
+<div className="relative w-[800px] h-[600px]">
+  <ShirtViewer3D />
+</div>
+```
+
+<Note>
+**Parent Sizing Required**: The component uses `w-full h-full`, so the parent container must have explicit dimensions.
+</Note>
+
+## Extending the Component
+
+To make the component accept dynamic customizations:
+
+### Adding Color Props
+
+```jsx
+function ShirtModel({ colors }) {
+  const { scene } = useGLTF("/camisa3D/camiseta.glb");
+  
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        if (child.name === 'torso') {
+          child.material.color.set(colors.torso);
+        }
+        if (child.name === 'sleeves') {
+          child.material.color.set(colors.sleeves);
+        }
+        // ... other parts
+      }
+    });
+  }, [colors, scene]);
+  
+  return <primitive object={scene} scale={1.5} />;
+}
+
+export default function ShirtViewer3D({ colors }) {
+  return (
+    <div className="w-full h-full">
+      <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <Suspense fallback={null}>
+          <ShirtModel colors={colors} />
+        </Suspense>
+        <OrbitControls 
+          autoRotate 
+          autoRotateSpeed={4}
+          enableZoom={true}
+          enablePan={true}
+        />
+      </Canvas>
+    </div>
+  );
+}
+```
+
+### Adding Texture Maps
+
+```jsx
+import { useTexture } from '@react-three/drei';
+
+function ShirtModel({ logoUrl }) {
+  const { scene } = useGLTF("/camisa3D/camiseta.glb");
+  const logoTexture = useTexture(logoUrl);
+  
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh && child.name === 'chest') {
+        child.material.map = logoTexture;
+        child.material.needsUpdate = true;
+      }
+    });
+  }, [logoTexture, scene]);
+  
+  return <primitive object={scene} scale={1.5} />;
+}
+```
+
+## Performance Optimization
+
+### Model Preloading
+
+Preload the GLB file to avoid loading delays:
+
+```jsx
+import { useGLTF } from '@react-three/drei';
+
+// At the bottom of your component file:
+useGLTF.preload('/camisa3D/camiseta.glb');
+```
+
+### Texture Optimization
+
+<Tabs>
+  <Tab title="Compress Textures">
+    Use compressed texture formats (KTX2, Basis) for faster loading
+  </Tab>
+  <Tab title="Reduce Resolution">
+    Lower texture resolution for web delivery (1024x1024 or 2048x2048)
+  </Tab>
+  <Tab title="Optimize GLB">
+    Use gltf-pipeline or Blender to optimize geometry and remove unused data
+  </Tab>
+</Tabs>
+
+### Frame Rate
+
+Limit render frame rate if needed:
+
+```jsx
+<Canvas frameloop="demand">  {/* Only renders when camera moves */}
+  {/* or */}
+<Canvas frameloop="always">   {/* Always renders (default) */}
+</Canvas>
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Model not displaying">
+    - Verify GLB file exists at `/public/camisa3D/camiseta.glb`
+    - Check browser console for 404 errors
+    - Ensure model has valid geometry and materials
+    - Add a fallback to Suspense to see if model is loading
+  </Accordion>
+  
+  <Accordion title="Camera too close/far">
+    - Adjust `camera.position` Z value (higher = farther)
+    - Modify `scale` prop on the model
+    - Add `minDistance` and `maxDistance` to OrbitControls
+  </Accordion>
+  
+  <Accordion title="Model appears black">
+    - Check lighting configuration
+    - Verify model has proper materials
+    - Inspect model normals (may be inverted)
+    - Increase ambient light intensity
+  </Accordion>
+  
+  <Accordion title="Performance issues">
+    - Reduce model polygon count
+    - Compress textures
+    - Disable auto-rotate or reduce speed
+    - Use `frameloop="demand"` for static scenes
+  </Accordion>
+</AccordionGroup>
+
+## 3D Model Requirements
+
+For best results, the GLB file should:
+
+- Use **PBR materials** (Physically Based Rendering)
+- Have **UV-mapped textures**
+- Include **proper normals**
+- Be **optimized** (< 5MB recommended)
+- Use **named meshes** for material targeting
+- Have **centered origin point**
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="React Three Fiber Docs" icon="book" href="https://docs.pmnd.rs/react-three-fiber">
+    Official R3F documentation
+  </Card>
+  <Card title="Drei Helpers" icon="toolbox" href="https://github.com/pmndrs/drei">
+    Collection of useful helpers for R3F
+  </Card>
+  <Card title="Three.js Docs" icon="cube" href="https://threejs.org/docs/">
+    Core Three.js documentation
+  </Card>
+  <Card title="glTF Viewer" icon="eye" href="https://gltf.report/">
+    Test and inspect GLB/GLTF files
+  </Card>
+</CardGroup>

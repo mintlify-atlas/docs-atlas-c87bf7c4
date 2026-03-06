@@ -1,0 +1,392 @@
+---
+title: '3D Uniform Viewer'
+description: 'Interactive 3D viewer for real-time uniform preview powered by Three.js and React Three Fiber'
+icon: 'cube'
+---
+
+## Overview
+
+The 3D Uniform Viewer is a real-time visualization component that displays your custom uniform design in an interactive 3D environment. Built with Three.js and React Three Fiber, it provides an immersive preview experience that allows users to inspect their design from every angle.
+
+<Note>
+  The 3D viewer automatically loads when you enter the customization page and updates in real-time as you modify your design.
+</Note>
+
+## Technology Stack
+
+The 3D viewer is powered by industry-standard 3D rendering libraries:
+
+<CardGroup cols={3}>
+  <Card title="Three.js" icon="cube">
+    Core 3D rendering engine
+  </Card>
+  <Card title="React Three Fiber" icon="react">
+    React renderer for Three.js
+  </Card>
+  <Card title="Drei" icon="shapes">
+    Helper components and utilities
+  </Card>
+</CardGroup>
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx`
+
+## Core Features
+
+### 1. 3D Model Display
+
+The viewer loads and renders a 3D uniform model in GLB format:
+
+```javascript
+function ShirtModel() {
+  const { scene } = useGLTF("/camisa3D/camiseta.glb");
+  return <primitive object={scene} scale={1.5} />;
+}
+```
+
+**Key Details**:
+- **Model Format**: GLB (Binary glTF)
+- **Model Path**: `/camisa3D/camiseta.glb`
+- **Scale**: 1.5x for optimal viewing size
+- **Loading**: Uses `useGLTF` hook from `@react-three/drei`
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:5-8`
+
+<Tip>
+  GLB format provides efficient loading and rendering performance for web-based 3D models. The model is cached after initial load for faster subsequent renders.
+</Tip>
+
+### 2. Interactive Camera Controls
+
+The OrbitControls component enables intuitive 3D navigation:
+
+<Tabs>
+  <Tab title="Auto Rotation">
+    **Automatic Rotation**: The model continuously rotates to showcase all angles
+    
+    ```javascript
+    <OrbitControls 
+      autoRotate 
+      autoRotateSpeed={4}
+    />
+    ```
+    
+    - **Speed**: 4 units per frame
+    - **Direction**: Clockwise rotation
+    - **Purpose**: Provides dynamic view without user interaction
+  </Tab>
+  
+  <Tab title="Zoom Controls">
+    **Zoom In/Out**: Mouse wheel or pinch gesture
+    
+    ```javascript
+    <OrbitControls 
+      enableZoom={true}
+    />
+    ```
+    
+    - **Method**: Scroll wheel (desktop) or pinch (mobile)
+    - **Range**: Configurable min/max distance
+    - **Smooth**: Animated zoom transitions
+  </Tab>
+  
+  <Tab title="Pan Controls">
+    **Pan Movement**: Drag to reposition the view
+    
+    ```javascript
+    <OrbitControls 
+      enablePan={true}
+    />
+    ```
+    
+    - **Method**: Click and drag (right-click or two-finger)
+    - **Axes**: X and Y axis movement
+    - **Boundaries**: Configurable limits
+  </Tab>
+</Tabs>
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:19-24`
+
+### User Interactions
+
+The 3D viewer supports multiple interaction methods:
+
+| Action | Mouse | Touch | Result |
+|--------|-------|-------|--------|
+| Rotate | Left-click + drag | One-finger drag | Orbit around model |
+| Zoom | Scroll wheel | Pinch | Zoom in/out |
+| Pan | Right-click + drag | Two-finger drag | Move view position |
+
+<Warning>
+  Auto-rotation pauses when user interacts with the model and resumes after a brief idle period.
+</Warning>
+
+## Lighting Setup
+
+The scene uses a two-light setup for optimal model visibility:
+
+### Ambient Light
+
+```javascript
+<ambientLight intensity={0.5} />
+```
+
+- **Type**: Uniform ambient illumination
+- **Intensity**: 0.5 (50% brightness)
+- **Purpose**: Provides base lighting to prevent harsh shadows
+- **Color**: White (default)
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:14`
+
+### Directional Light
+
+```javascript
+<directionalLight position={[10, 10, 5]} intensity={1} />
+```
+
+- **Type**: Directional (sun-like) light
+- **Position**: [X: 10, Y: 10, Z: 5] (top-right-front)
+- **Intensity**: 1.0 (100% brightness)
+- **Purpose**: Creates depth and highlights uniform details
+- **Shadows**: Can be enabled for enhanced realism
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:15`
+
+<Accordion title="Lighting Visualization">
+  The lighting setup creates a natural appearance:
+  
+  - **Ambient light** fills shadows and ensures no areas are completely dark
+  - **Directional light** from upper-right creates natural highlights and shadows
+  - Combined effect produces professional product visualization
+</Accordion>
+
+## Camera Configuration
+
+The Canvas component defines the initial camera setup:
+
+```javascript
+<Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+```
+
+### Camera Properties
+
+<CardGroup cols={2}>
+  <Card title="Position" icon="location-dot">
+    **[0, 0, 3]**
+    
+    - X: 0 (centered)
+    - Y: 0 (eye level)
+    - Z: 3 (3 units away)
+  </Card>
+  
+  <Card title="Field of View" icon="eye">
+    **50 degrees**
+    
+    - Balanced perspective
+    - Neither wide-angle nor telephoto
+    - Natural viewing experience
+  </Card>
+</CardGroup>
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:13`
+
+## Performance Optimization
+
+### Suspense Loading
+
+The component uses React Suspense for efficient model loading:
+
+```javascript
+<Suspense fallback={null}>
+  <ShirtModel />
+</Suspense>
+```
+
+**Benefits**:
+- **Non-blocking**: UI remains responsive during model load
+- **Graceful handling**: No flash of loading state (fallback={null})
+- **Error boundary**: Prevents crashes if model fails to load
+- **Progressive loading**: Model appears when ready
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:16-18`
+
+<Tip>
+  The 3D model is cached by the browser after the first load, making subsequent visits nearly instantaneous.
+</Tip>
+
+### Model Optimization
+
+The GLB format provides several performance advantages:
+
+- **Binary format**: Faster parsing than JSON-based formats
+- **Compressed**: Smaller file size for quicker downloads
+- **Embedded textures**: Single file contains all assets
+- **GPU-ready**: Optimized for WebGL rendering
+
+## Component Structure
+
+### Main Viewer Component
+
+```javascript
+export default function ShirtViewer3D() {
+  return (
+    <div className="w-full h-full">
+      <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+        {/* Lighting */}
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        
+        {/* Model with Suspense */}
+        <Suspense fallback={null}>
+          <ShirtModel />
+        </Suspense>
+        
+        {/* Controls */}
+        <OrbitControls 
+          autoRotate 
+          autoRotateSpeed={4}
+          enableZoom={true}
+          enablePan={true}
+        />
+      </Canvas>
+    </div>
+  );
+}
+```
+
+**Code Reference**: `src/components/ShirtViewer3D.jsx:10-28`
+
+### Container Styling
+
+The viewer uses full width and height of its container:
+
+- **Class**: `w-full h-full` (Tailwind CSS)
+- **Parent sizing**: Controlled by `Customize.jsx`
+- **Aspect ratio**: Maintains 3D perspective
+- **Responsive**: Adapts to container dimensions
+
+## Integration with Customization Page
+
+The 3D viewer is integrated into the customization page layout:
+
+```javascript
+<section className="w-full max-w-xl h-96">
+  <ShirtViewer3D />
+</section>
+```
+
+**Layout Details**:
+- **Maximum width**: 40rem (max-w-xl)
+- **Fixed height**: 24rem (h-96)
+- **Positioning**: Centered in main content area
+- **Responsive**: Adjusts to available space
+
+**Code Reference**: `src/pages/Customize.jsx:45-47`
+
+## Browser Compatibility
+
+The 3D viewer requires WebGL support:
+
+<CardGroup cols={2}>
+  <Card title="Supported Browsers" icon="check">
+    - Chrome 56+
+    - Firefox 51+
+    - Safari 11+
+    - Edge 79+
+  </Card>
+  
+  <Card title="Requirements" icon="gear">
+    - WebGL 1.0 or higher
+    - JavaScript enabled
+    - Hardware acceleration recommended
+  </Card>
+</CardGroup>
+
+<Note>
+  Most modern browsers support WebGL by default. Users with older browsers or disabled WebGL will see a fallback message.
+</Note>
+
+## Future Enhancements
+
+The 3D viewer architecture supports potential upgrades:
+
+<AccordionGroup>
+  <Accordion title="Real-time Color Updates" icon="palette">
+    Apply color selections directly to the 3D model in real-time by mapping sidebar color choices to model materials.
+  </Accordion>
+  
+  <Accordion title="Texture Mapping" icon="image">
+    Display selected design templates as textures on the 3D uniform model.
+  </Accordion>
+  
+  <Accordion title="Logo Placement" icon="copyright">
+    Show uploaded logos in their actual position on the 3D model.
+  </Accordion>
+  
+  <Accordion title="Multiple Views" icon="images">
+    Provide preset camera angles (front, back, side) for quick inspection.
+  </Accordion>
+  
+  <Accordion title="AR Preview" icon="mobile">
+    Enable augmented reality preview using WebXR for mobile devices.
+  </Accordion>
+</AccordionGroup>
+
+## Technical Dependencies
+
+Required npm packages:
+
+```json
+{
+  "@react-three/fiber": "^8.x",
+  "@react-three/drei": "^9.x",
+  "three": "^0.150.x"
+}
+```
+
+<Warning>
+  Ensure these dependencies are installed and up-to-date for optimal 3D rendering performance.
+</Warning>
+
+## Troubleshooting
+
+### Common Issues
+
+<Accordion title="Model not loading">
+  **Symptoms**: Blank 3D viewer area
+  
+  **Solutions**:
+  - Check that `/camisa3D/camiseta.glb` exists in the public directory
+  - Verify network requests in browser DevTools
+  - Ensure proper GLB file format
+  - Check for CORS issues
+</Accordion>
+
+<Accordion title="Performance issues">
+  **Symptoms**: Laggy rotation or controls
+  
+  **Solutions**:
+  - Enable hardware acceleration in browser settings
+  - Close other resource-intensive tabs
+  - Check GPU compatibility
+  - Reduce model complexity if possible
+</Accordion>
+
+<Accordion title="WebGL errors">
+  **Symptoms**: Error messages about WebGL context
+  
+  **Solutions**:
+  - Update graphics drivers
+  - Try a different browser
+  - Check if WebGL is enabled in browser flags
+  - Test on [webglreport.com](https://webglreport.com)
+</Accordion>
+
+## Best Practices
+
+<Tip>
+  **For optimal 3D viewing experience**:
+  - Use a modern browser with updated graphics drivers
+  - View on a device with hardware acceleration enabled
+  - Allow the model to fully load before interacting
+  - Use mouse/trackpad for precise rotation control
+</Tip>

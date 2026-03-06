@@ -1,0 +1,747 @@
+---
+title: 'Order Process'
+description: 'Complete workflow from design review to order submission with contact form and API integration'
+icon: 'cart-shopping'
+---
+
+## Overview
+
+The order process takes your custom uniform design through review, contact information collection, and final submission to the Dark Lion API. This multi-step workflow ensures all design details are correct before sending your order for production.
+
+<Note>
+  The order process is managed through the `SelectedData` page, which serves as both a review interface and submission portal.
+</Note>
+
+## Order Workflow
+
+The complete order process follows these stages:
+
+<Steps>
+  <Step title="Design Completion">
+    Complete your uniform customization on the `/personalizar/:modelo` page
+    
+    - Select all design elements
+    - Add team members
+    - Choose colors and fonts
+    - Upload logo
+  </Step>
+  
+  <Step title="Save Design">
+    Click "Guardar Uniforme" to proceed to review
+    
+    - Design data is saved to navigation state
+    - Redirects to `/datos-seleccionados`
+    - All customization is preserved
+  </Step>
+  
+  <Step title="Review Design">
+    Inspect your complete uniform design
+    
+    - View all customization choices
+    - See player roster
+    - Preview uniform visuals
+    - Edit if needed
+  </Step>
+  
+  <Step title="Enter Contact Info">
+    Provide your contact details
+    
+    - Name (required)
+    - Phone number (required, 10 digits)
+    - Email address (required, valid format)
+  </Step>
+  
+  <Step title="Submit Order">
+    Send your design to Dark Lion
+    
+    - Data validated before submission
+    - Sent to production API
+    - Confirmation message displayed
+  </Step>
+</Steps>
+
+## Review Page Interface
+
+The SelectedData page (`src/pages/SelectedData.jsx`) provides a comprehensive review interface before order submission.
+
+### Page Structure
+
+The page has two main views:
+
+<Tabs>
+  <Tab title="Design Review">
+    Initial view showing all customization details
+    
+    **Components**:
+    - Left sidebar with design summary
+    - Center area with uniform preview
+    - Edit button to return to customization
+    - "Enviar Uniforme" button to proceed
+    
+    **Code Reference**: `src/pages/SelectedData.jsx:184-382`
+  </Tab>
+  
+  <Tab title="Contact Form">
+    Secondary view for collecting customer information
+    
+    **Components**:
+    - Left sidebar with contact form
+    - Center area with uniform preview (same as review)
+    - Cancel button to return to review
+    - Submit button to send order
+    
+    **Code Reference**: `src/pages/SelectedData.jsx:385-428`
+  </Tab>
+</Tabs>
+
+### State Validation
+
+The page redirects to home if accessed without design data:
+
+```javascript
+useEffect(() => {
+  if (!state) {
+    navigate("/");
+  }
+}, [state, navigate]);
+```
+
+**Protection Logic**:
+- Checks for location state on mount
+- Prevents direct URL access
+- Ensures data is always available
+- Redirects to home if missing
+
+**Code Reference**: `src/pages/SelectedData.jsx:13-17`
+
+<Warning>
+  Do not bookmark or directly access the review page. Always navigate through the customization flow to ensure data is properly loaded.
+</Warning>
+
+## Design Review Details
+
+The sidebar displays complete design information organized into sections:
+
+### Configuration Section
+
+<CardGroup cols={2}>
+  <Card title="Fabric Type" icon="shirt">
+    Selected material
+    
+    Displays: Microfibra, Poliester, Nylon, or Dry-Fit
+  </Card>
+  
+  <Card title="Design Template" icon="image">
+    Chosen design pattern
+    
+    Shows thumbnail of selected design
+  </Card>
+  
+  <Card title="Team Name" icon="users">
+    Team text and font
+    
+    Displays team name and selected font
+  </Card>
+  
+  <Card title="Player Name" icon="user">
+    Player text and font
+    
+    Shows player name field and font choice
+  </Card>
+  
+  <Card title="Logo" icon="copyright">
+    Team logo preview
+    
+    Displays uploaded logo thumbnail
+  </Card>
+</CardGroup>
+
+**Code Reference**: `src/pages/SelectedData.jsx:206-252`
+
+### Color Summary
+
+All color selections are displayed with visual swatches:
+
+```javascript
+<li>
+  <strong>Cuerpo:</strong>
+  {design.colors?.torso ? (
+    <span
+      className="inline-block w-6 h-6 rounded border border-gray-300 ml-1"
+      style={{ backgroundColor: design.colors.torso }}
+      title={design.colors.torso}
+    />
+  ) : ("—")}
+</li>
+```
+
+**Display Features**:
+- **Visual swatches**: 24x24px colored squares
+- **Border**: Gray outline for visibility
+- **Tooltip**: RGB value on hover
+- **Fallback**: Dash (—) if no color selected
+
+**Color Areas**:
+- Cuerpo (Body)
+- Espalda (Back)
+- Mangas (Sleeves)
+- Cuello (Collar)
+
+**Code Reference**: `src/pages/SelectedData.jsx:254-307`
+
+### Player Roster
+
+Complete team roster with all player details:
+
+```javascript
+{players.map((p, i) => (
+  <div key={p.id || i} className="bg-purple-100 p-2 rounded">
+    <p><strong>{p.name || `Jugador ${i + 1}`}</strong></p>
+    <p>
+      Género: {p.gender || "—"} | 
+      Jersey: {p.jersey || "—"} | 
+      Nº {p.number || "—"}
+    </p>
+    <p>Cant: {p.quantity}</p>
+  </div>
+))}
+```
+
+**Roster Display**:
+- Purple background cards for each player
+- Player name (or "Jugador N" if empty)
+- Gender, jersey size, and number
+- Quantity of uniforms
+- Compact, scannable layout
+
+**Code Reference**: `src/pages/SelectedData.jsx:309-333`
+
+## Action Buttons
+
+### Edit Button
+
+Return to customization to make changes:
+
+```javascript
+const handleEdit = useCallback(() => {
+  if (modelo) {
+    navigate(`/personalizar/${modelo}`, {
+      state: { design, players, modelo },
+    });
+  }
+}, [modelo, navigate, design, players]);
+```
+
+**Features**:
+- Purple button with hover effect
+- Navigates back to customization page
+- Passes all data via state
+- Changes are preserved
+- Can edit as many times as needed
+
+**Code Reference**: `src/pages/SelectedData.jsx:36-42, 335-341`
+
+### Send Uniform Button
+
+Proceed to contact form:
+
+```javascript
+<button
+  onClick={() => setShowContactForm(true)}
+  className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition"
+>
+  Enviar Uniforme
+</button>
+```
+
+**Features**:
+- Green background for positive action
+- Hover darkening effect
+- Toggles to contact form view
+- Full-width button
+- Clear call-to-action
+
+**Code Reference**: `src/pages/SelectedData.jsx:343-349`
+
+## Contact Form
+
+The contact form component (`src/components/ContactForm.jsx`) collects customer information before order submission.
+
+### Form Fields
+
+<Tabs>
+  <Tab title="Name">
+    **Nombre** - Full name field
+    
+    **Validation**:
+    - Required field
+    - Minimum 3 characters
+    - Cannot be empty or whitespace only
+    
+    **Error Messages**:
+    - "El nombre es obligatorio" (if empty)
+    - "El nombre debe tener al menos 3 caracteres" (if too short)
+    
+    **Code Reference**: 
+    - Form: `src/components/ContactForm.jsx:36-53`
+    - Validation: `src/pages/SelectedData.jsx:54-61`
+  </Tab>
+  
+  <Tab title="Phone">
+    **Teléfono** - Contact phone number
+    
+    **Validation**:
+    - Required field
+    - Must contain exactly 10 digits
+    - Non-digit characters are stripped for validation
+    
+    **Error Messages**:
+    - "El teléfono es obligatorio" (if empty)
+    - "El teléfono debe contener exactamente 10 dígitos" (if invalid)
+    
+    **Code Reference**:
+    - Form: `src/components/ContactForm.jsx:55-73`
+    - Validation: `src/pages/SelectedData.jsx:63-73`
+  </Tab>
+  
+  <Tab title="Email">
+    **Correo Electrónico** - Email address
+    
+    **Validation**:
+    - Required field
+    - Must match email regex pattern
+    - Format: `name@domain.extension`
+    
+    **Error Messages**:
+    - "El correo es obligatorio" (if empty)
+    - "Ingresa un correo válido" (if invalid format)
+    
+    **Code Reference**:
+    - Form: `src/components/ContactForm.jsx:75-93`
+    - Validation: `src/pages/SelectedData.jsx:75-82`
+  </Tab>
+</Tabs>
+
+### Validation System
+
+The form implements real-time validation:
+
+```javascript
+const validateContactData = () => {
+  const errors = { nombre: "", telefono: "", correo: "" };
+  let isValid = true;
+  
+  // Validate each field
+  // ...
+  
+  setFieldErrors(errors);
+  return isValid;
+};
+```
+
+**Validation Flow**:
+1. Called when "Contactame" button is clicked
+2. Checks all three fields
+3. Sets error messages for invalid fields
+4. Returns boolean for submission control
+5. Prevents API call if validation fails
+
+**Code Reference**: `src/pages/SelectedData.jsx:50-86`
+
+### Error Display
+
+Errors are shown directly below each field:
+
+```javascript
+{fieldErrors?.nombre && (
+  <p className="text-sm text-red-600 mt-2">{fieldErrors.nombre}</p>
+)}
+```
+
+**Error Styling**:
+- Red text color (text-red-600)
+- Small font size (text-sm)
+- Margin above (mt-2)
+- Border changes to red when error exists
+- Clears when user starts typing
+
+**Code Reference**: `src/components/ContactForm.jsx:50-52, 70-72, 90-92`
+
+### Form Actions
+
+<CardGroup cols={2}>
+  <Card title="Cancel" icon="xmark">
+    Return to design review
+    
+    - Gray button
+    - Resets to review view
+    - Contact data is preserved
+    - Disabled during submission
+  </Card>
+  
+  <Card title="Contactame" icon="paper-plane">
+    Submit order to API
+    
+    - Purple-pink gradient
+    - Triggers validation
+    - Shows "Enviando..." during submission
+    - Disabled during submission
+  </Card>
+</CardGroup>
+
+**Code Reference**: `src/components/ContactForm.jsx:95-110`
+
+## Order Submission
+
+When the contact form is submitted, data is sent to the Dark Lion API.
+
+### API Endpoint
+
+```
+POST https://api-darklion.onrender.com/api/designs/client-and-design
+```
+
+### Payload Structure
+
+The submission payload combines design, player, and contact data:
+
+```json
+{
+  "name": "Customer Name",
+  "email": "customer@email.com",
+  "phone_number": 5551234567,
+  "id_product": 1,
+  "design_file_url": "https://example.com/design.png",
+  "tela": "Microfibra",
+  "tallas": [
+    {
+      "tipo": "CABALLERO",
+      "talla": "L",
+      "cantidad": 5
+    }
+  ],
+  "listado": [
+    {
+      "nombre": "Player Name",
+      "talla": "L",
+      "cantidad": 1,
+      "genero": "CABALLERO",
+      "numero": 10
+    }
+  ]
+}
+```
+
+### Payload Preparation
+
+The `preparePayload` function structures all data:
+
+```javascript
+const preparePayload = () => {
+  // Aggregate tallas by tipo and talla
+  const tallasMap = {};
+  players.forEach((p) => {
+    const tipo =
+      p.gender === "H" ? "CABALLERO" : 
+      p.gender === "M" ? "DAMA" : p.gender;
+    const talla = p.jersey || "";
+    const key = `${tipo}-${talla}`;
+    if (!tallasMap[key]) {
+      tallasMap[key] = { tipo, talla, cantidad: 0 };
+    }
+    tallasMap[key].cantidad += p.quantity || 0;
+  });
+  const tallas = Object.values(tallasMap);
+  
+  return {
+    name: contactData.nombre,
+    email: contactData.correo,
+    phone_number: parseInt(contactData.telefono.replace(/\D/g, "")),
+    id_product: 1,
+    design_file_url: design.design || "https://example.com/dummy.png",
+    tela: design.fabricType || "Default",
+    tallas,
+    listado: players.map((p) => ({ /* ... */ })),
+  };
+};
+```
+
+**Key Transformations**:
+- Phone number converted to integer (digits only)
+- Gender codes mapped to Spanish terms (H→CABALLERO, M→DAMA)
+- Sizes aggregated by type and size for inventory
+- Player numbers only included if provided
+- Default values for missing data
+
+**Code Reference**: `src/pages/SelectedData.jsx:88-125`
+
+### Submission Handler
+
+The `handleSendUniform` function manages the submission process:
+
+```javascript
+const handleSendUniform = async () => {
+  // Validate contact data
+  if (!validateContactData()) {
+    return;
+  }
+  
+  setSending(true);
+  
+  const payload = preparePayload();
+  console.log("Payload being sent:", payload);
+  
+  try {
+    const res = await fetch(
+      "https://api-darklion.onrender.com/api/designs/client-and-design",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Status ${res.status}: ${txt}`);
+    }
+    
+    const data = await res.json();
+    console.log("Respuesta API:", data);
+    alert("Uniforme enviado con éxito!");
+    setShowContactForm(false);
+    
+    // Reset form
+    setContactData({ nombre: "", telefono: "", correo: "" });
+    setFieldErrors({ nombre: "", telefono: "", correo: "" });
+  } catch (err) {
+    console.error("Error sending uniform:", err);
+    setFieldErrors((prev) => ({
+      ...prev,
+      correo: `Error al enviar: ${err.message}`,
+    }));
+  } finally {
+    setSending(false);
+  }
+};
+```
+
+**Submission Flow**:
+1. Validate contact information
+2. Set sending state (disables buttons)
+3. Prepare payload
+4. Log payload for debugging
+5. Send POST request to API
+6. Check response status
+7. Parse JSON response
+8. Show success alert
+9. Reset form to review view
+10. Clear contact data
+11. Handle errors by displaying message
+12. Always clear sending state
+
+**Code Reference**: `src/pages/SelectedData.jsx:127-169`
+
+<Note>
+  The payload is logged to the console before submission, which is helpful for debugging but should be removed in production for security.
+</Note>
+
+## Success Handling
+
+When submission succeeds:
+
+1. **Success Alert**: Browser alert shows "Uniforme enviado con éxito!"
+2. **View Reset**: Returns to design review view
+3. **Form Clear**: Contact form fields are cleared
+4. **Error Clear**: All error messages are removed
+5. **State Preserve**: Design data remains for reference
+
+**Code Reference**: `src/pages/SelectedData.jsx:155-159`
+
+<Tip>
+  After successful submission, you can edit and resubmit the design if needed. The design data is not cleared from the review page.
+</Tip>
+
+## Error Handling
+
+### Validation Errors
+
+Client-side validation prevents submission:
+
+- Error messages displayed under each field
+- Red border on invalid fields
+- Submission blocked until all fields are valid
+- Error clears when user starts typing
+
+### API Errors
+
+Server errors are handled gracefully:
+
+```javascript
+catch (err) {
+  console.error("Error sending uniform:", err);
+  setFieldErrors((prev) => ({
+    ...prev,
+    correo: `Error al enviar: ${err.message}`,
+  }));
+}
+```
+
+**Error Display**:
+- Logged to console for debugging
+- Shown under email field (correo)
+- Includes error message from server
+- User can retry after fixing issues
+
+**Code Reference**: `src/pages/SelectedData.jsx:160-165`
+
+<Warning>
+  Network errors or API downtime will display an error message. Check your internet connection and try again. Contact support if the issue persists.
+</Warning>
+
+## Visual Preview
+
+Both review and contact views display uniform previews:
+
+### Main Preview
+
+Large uniform image in center area:
+
+```javascript
+<div className="h-100 flex items-center justify-center">
+  <img
+    src={frente}
+    alt="Camisa principal"
+    className="h-full object-contain"
+  />
+</div>
+```
+
+**Features**:
+- Large display area (h-100)
+- Centered positioning
+- Object-contain for aspect ratio
+- Full height utilization
+
+**Code Reference**: `src/pages/SelectedData.jsx:356-362`
+
+### Thumbnail Previews
+
+Smaller previews at bottom:
+
+```javascript
+<div className="flex gap-12">
+  <img
+    src={frente}
+    alt="Modelo frente"
+    className="h-28 object-contain cursor-pointer hover:scale-105 transition"
+  />
+  <img
+    src={frente}
+    alt="Modelo espalda"
+    className="h-28 object-contain cursor-pointer hover:scale-105 transition"
+  />
+</div>
+```
+
+**Features**:
+- Front and back views
+- 112px height (h-28)
+- Hover scale effect
+- Cursor pointer indication
+- Smooth transitions
+- Gap spacing between images
+
+**Code Reference**: `src/pages/SelectedData.jsx:366-380`
+
+<Note>
+  Currently, the same image is used for both front and back views. Future versions will display actual uniform renders with applied customizations.
+</Note>
+
+## State Management
+
+The order process uses multiple state variables:
+
+```javascript
+const [showContactForm, setShowContactForm] = useState(false);
+const [contactData, setContactData] = useState({
+  nombre: "",
+  telefono: "",
+  correo: "",
+});
+const [sending, setSending] = useState(false);
+const [fieldErrors, setFieldErrors] = useState({
+  nombre: "",
+  telefono: "",
+  correo: "",
+});
+```
+
+**State Variables**:
+- `showContactForm`: Toggles between review and contact views
+- `contactData`: Stores name, phone, email values
+- `sending`: Loading state during API call
+- `fieldErrors`: Validation error messages
+
+**Code Reference**: `src/pages/SelectedData.jsx:23-34`
+
+### Navigation State
+
+Design data comes from React Router location state:
+
+```javascript
+const { state } = useLocation();
+const design = state?.design || {};
+const players = state?.players || [];
+const modelo = state?.modelo || "";
+```
+
+**Data Structure**:
+- `design`: All customization options
+- `players`: Team roster array
+- `modelo`: Uniform style (cuello-v, etc.)
+
+**Code Reference**: `src/pages/SelectedData.jsx:9, 19-21`
+
+## Best Practices
+
+<Tip>
+  **For a smooth order process**:
+  1. Review all design details carefully before proceeding
+  2. Verify player roster is complete and accurate
+  3. Use a valid email address for order confirmation
+  4. Provide a working phone number for contact
+  5. Double-check all information before clicking "Contactame"
+</Tip>
+
+<Warning>
+  Once submitted, orders cannot be modified through the interface. Contact Dark Lion customer support if you need to make changes to a submitted order.
+</Warning>
+
+## Future Enhancements
+
+<AccordionGroup>
+  <Accordion title="Order Confirmation Email" icon="envelope">
+    Automatically send confirmation email with order details and reference number to customer.
+  </Accordion>
+  
+  <Accordion title="Order Tracking" icon="truck">
+    Provide order status tracking with updates on production and shipping progress.
+  </Accordion>
+  
+  <Accordion title="Save Draft" icon="floppy-disk">
+    Allow users to save incomplete designs and return later to complete the order.
+  </Accordion>
+  
+  <Accordion title="Multiple Payment Options" icon="credit-card">
+    Integrate payment gateway for online payment processing at time of order.
+  </Accordion>
+  
+  <Accordion title="Order History" icon="clock-rotate-left">
+    User accounts with order history and ability to reorder previous designs.
+  </Accordion>
+  
+  <Accordion title="PDF Export" icon="file-pdf">
+    Generate downloadable PDF with all order details for customer records.
+  </Accordion>
+</AccordionGroup>
